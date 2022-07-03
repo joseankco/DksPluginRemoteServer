@@ -1,1 +1,1 @@
-pyinstaller --onefile --icon="src/resources/icon.ico" --add-data "src/templates;src/templates" --add-data "src/static;src/static" src/RemoteStatsServer.py
+pyinstaller --onefile --icon="src/resources/icon.ico" --add-data "src/templates;templates" --add-data "src/static;static" src/RemoteStatsServer.py
