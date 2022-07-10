@@ -118,7 +118,7 @@ function renderMapOverlay() {
     if (parseInt(json.hero.hull) == 0) {
         $('#hullw').css('display', 'none')
     } else {
-        $('#hullw').css('display', 'block')
+        $('#hullw').css('display', '')
     }
     $('#hp').text(parseInt(json.hero.hp).toLocaleString() + ' / ' + parseInt(json.hero.maxHp).toLocaleString())
     $('#hp').css('width', parseInt(json.hero.hpPercent * 100) + '%')
@@ -143,6 +143,67 @@ function renderMapOverlay() {
     }
 }
 
+function renderLogScrapper() {
+    if (!!json.plugin.logScrapper) {
+        var patterns = json.plugin.logScrapper.patterns
+        if (patterns?.length > 0) {
+            $("#patternsTableBody").empty();
+            patterns.forEach(function(pattern) {
+                $("#patternsTableBody")
+                    .append($('<tr>')
+                        .append($('<td>')
+                            .attr('scope', 'row')
+                            .text(pattern.pattern)
+                        )
+                        .append($('<td>')
+                            .text(pattern.occurrences)
+                        )
+                        .append($('<td>')
+                            .text(pattern.occurrencesh)
+                        )
+                        .append($('<td>')
+                            .text(pattern.total)
+                        )
+                        .append($('<td>')
+                            .text(pattern.totalh)
+                        )
+                    )
+            })
+        }
+    }
+}
+
+function renderPalladiumStats() {
+    if (!!json.plugin.palladiumStats) {
+        $('#pstats-status').text(json.plugin.palladiumStats.status)
+        $('#pstats-running').text(json.plugin.palladiumStats.runningTime)
+        $('#pstats-collected').text(json.plugin.palladiumStats.total)
+        $('#pstats-collected-hour').text(json.plugin.palladiumStats.totalh)
+        $('#pstats-ee-hour').text(json.plugin.palladiumStats.eeh)
+    }
+}
+
+function renderLogsViewer() {
+    if (!!json.plugin.liveLogs) {
+        var stdLines = json.plugin.liveLogs.lastStdLogs
+        if (stdLines?.length > 0) {
+            var strStdLines = ''
+            stdLines.forEach(function(line) {
+                strStdLines = strStdLines + line + '\n'
+            })
+            $('#log-std-lines').text(strStdLines);
+        }
+        var errLines = json.plugin.liveLogs.lastErrLogs
+        if (errLines?.length > 0) {
+            var strErrLines = ''
+            errLines.forEach(function(line) {
+                strErrLines = strErrLines + line + '\n'
+            })
+            $('#log-std-lines').text(strErrLines);
+        }
+    }
+}
+
 function renderNearby() {
     let ply = '';
     let np = '';
@@ -152,8 +213,10 @@ function renderNearby() {
     json.map.npcs.forEach(function(npc) {
         np += npc.name + '\n';
     });
-    $('#nearbyPlayers').text(ply);
-    $('#nearbyNpcs').text(np);
+    $('#nearbyPlayers-sm').text(ply);
+    $('#nearbyNpcs-sm').text(np);
+    $('#nearbyPlayers-md').text(ply);
+    $('#nearbyNpcs-md').text(np);
 }
 
 function renderDataTable() {
@@ -202,6 +265,9 @@ function initStreamWebSocket(urlWebSocket)
                 renderMapOverlay();
                 renderDataTable();
                 renderNearby();
+                renderLogScrapper();
+                renderPalladiumStats();
+                renderLogsViewer();
             }
         },
     };
