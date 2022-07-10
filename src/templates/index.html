@@ -31,6 +31,22 @@
                 color: white;
                 background-color: rgb(60, 60, 60) !important;
             }
+
+            .margin-inner-progress {
+                margin-top: 7px;
+            }
+
+            .bg-primary-op {
+                background-color: #0275d84D;
+            }
+
+            .bg-success-op {
+                background-color: #5cb85c4D;
+            }
+
+            .bg-warning-op {
+                background-color: #f0ad4e4D;
+            }
         </style>
     </head>
     <body>
@@ -97,7 +113,7 @@
                             <div class="row mt-2 d-none d-md-flex">
                                 <div class="col">
                                     <h4 class="mb-1">nearby npcs</h4>
-                                    <p class="text-muted mb-1" style="white-space: pre-line" id="nearbyNpcs-md"></p>
+                                    <p class="text-muted text-monospace mb-1" style="white-space: pre-wrap" id="nearbyNpcs-md"></p>
                                 </div>
                                 <div class="col">
                                     <h4 class="mb-1">nearby players</h4>
@@ -137,28 +153,33 @@
                             <!-- HEALTH -->
                             <div class="row">
                                 <div class="col">
-                                    <div id="hullw" class="progress mt-1">
+                                    <div id="hullw" class="progress bg-warning-op position-relative mt-1">
                                         <div id="hull" class="progress-bar bg-warning" role="progressbar"></div>
+                                        <p id="hull-desc" class="margin-inner-progress justify-content-center font-weight-bold d-flex position-absolute w-100 text-light mb-0"></p>
                                     </div>
-                                    <div id="hpw" class="progress mt-1">
+                                    <div id="hpw" class="progress bg-success-op position-relative mt-1">
                                         <div id="hp" class="progress-bar bg-success" role="progressbar"></div>
+                                        <p id="hp-desc" class="margin-inner-progress justify-content-center font-weight-bold d-flex position-absolute w-100 text-light mb-0"></p>
                                     </div>
-                                    <div id="shieldw" class="progress mt-1">
+                                    <div id="shieldw" class="progress bg-primary-op position-relative mt-1">
                                         <div id="shield" class="progress-bar" role="progressbar"></div>
+                                        <p id="shield-desc" class="margin-inner-progress justify-content-center font-weight-bold d-flex position-absolute w-100 text-light mb-0"></p>
                                     </div>
                                 </div>
                             </div>
                             <!-- TARGET -->
                             <div id="target" class="row">
                                 <div class="col-12">
-                                    <p id="targetName" class="mt-2 mb-0"></p>
+                                    <p id="targetName" class="mt-2 mb-0 font-weight-bold"></p>
                                 </div>
                                 <div class="col-12">
-                                    <div id="targetHpw" class="progress mt-1">
+                                    <div id="targetHpw" class="progress bg-success-op mt-1">
                                         <div id="targetHp" class="progress-bar bg-success" role="progressbar"></div>
+                                        <p id="targetHp-desc" class="margin-inner-progress justify-content-center font-weight-bold d-flex position-absolute w-100 text-light mb-0"></p>
                                     </div>
-                                    <div id="targetShieldw" class="progress mt-1">
+                                    <div id="targetShieldw" class="progress bg-primary-op mt-1">
                                         <div id="targetShield" class="progress-bar" role="progressbar"></div>
+                                        <p id="targetShield-desc" class="margin-inner-progress justify-content-center font-weight-bold d-flex position-absolute w-100 text-light mb-0"></p>
                                     </div>
                                 </div>
                             </div>
@@ -167,7 +188,7 @@
                     <div class="row mt-2 d-flex d-md-none">
                         <div class="col">
                             <h4 class="mb-1">nearby npcs</h4>
-                            <p class="text-muted mb-1" style="white-space: pre-line" id="nearbyNpcs-sm"></p>
+                            <p class="text-muted text-monospace mb-1" style="white-space: pre-wrap" id="nearbyNpcs-sm"></p>
                         </div>
                         <div class="col">
                             <h4 class="mb-1">nearby players</h4>

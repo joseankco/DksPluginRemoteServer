@@ -113,16 +113,16 @@ function renderMapOverlay() {
     $('#ping').text(json.stats.ping + 'ms');
     $('#mapName').text(json.map.name);
     $('#runningTime').text(json.stats.runningTime);
-    $('#hull').text(parseInt(json.hero.hull).toLocaleString() + ' / ' + parseInt(json.hero.maxHull).toLocaleString())
+    $('#hull-desc').text(parseInt(json.hero.hull).toLocaleString() + ' / ' + parseInt(json.hero.maxHull).toLocaleString())
     $('#hull').css('width', parseInt(json.hero.hullPercent * 100) + '%')
     if (parseInt(json.hero.hull) == 0) {
         $('#hullw').css('display', 'none')
     } else {
         $('#hullw').css('display', '')
     }
-    $('#hp').text(parseInt(json.hero.hp).toLocaleString() + ' / ' + parseInt(json.hero.maxHp).toLocaleString())
+    $('#hp-desc').text(parseInt(json.hero.hp).toLocaleString() + ' / ' + parseInt(json.hero.maxHp).toLocaleString())
     $('#hp').css('width', parseInt(json.hero.hpPercent * 100) + '%')
-    $('#shield').text(parseInt(json.hero.shield).toLocaleString() + ' / ' + parseInt(json.hero.maxShield).toLocaleString())
+    $('#shield-desc').text(parseInt(json.hero.shield).toLocaleString() + ' / ' + parseInt(json.hero.maxShield).toLocaleString())
     $('#shield').css('width', parseInt(json.hero.shieldPercent * 100) + '%')
     $('#status').text(json.module.status);
 
@@ -134,9 +134,9 @@ function renderMapOverlay() {
         } else {
             $('#targetName').css('color', colors.allies)
         }
-        $('#targetHp').text(parseInt(json.hero.target.hp).toLocaleString() + ' / ' + parseInt(json.hero.target.maxHp).toLocaleString())
+        $('#targetHp-desc').text(parseInt(json.hero.target.hp).toLocaleString() + ' / ' + parseInt(json.hero.target.maxHp).toLocaleString())
         $('#targetHp').css('width', parseInt(json.hero.target.hpPercent * 100) + '%')
-        $('#targetShield').text(parseInt(json.hero.target.shield).toLocaleString() + ' / ' + parseInt(json.hero.target.maxShield).toLocaleString())
+        $('#targetShield-desc').text(parseInt(json.hero.target.shield).toLocaleString() + ' / ' + parseInt(json.hero.target.maxShield).toLocaleString())
         $('#targetShield').css('width', parseInt(json.hero.target.shieldPercent * 100) + '%')
     } else {
         $('#target').css('display', 'none')
@@ -210,8 +210,33 @@ function renderNearby() {
     json.map.players.forEach(function(player) {
         ply += player.name + '\n';
     });
+    var npcmap = new Map();
+    var bigger = 1;
     json.map.npcs.forEach(function(npc) {
-        np += npc.name + '\n';
+        npcm = npcmap.get(npc.name);
+        if (!npcm) {
+            npcmap.set(npc.name, 1);
+        } else {
+            var n = npcm + 1;
+            npcmap.set(npc.name, n)
+            if (n > bigger) {
+                bigger = n;
+            }
+        }
+        // np += npc.name + '\n';
+    });
+    npcmap.forEach(function(value, key) {
+        var biggerstr = bigger.toString();
+        if (value > 1) {
+            var valuestr = value.toString();
+            np += valuestr.padStart(biggerstr.length, ' ') + 'x ' + key + '\n'
+        } else {
+            if (bigger > 1) {
+                np += ''.padStart(biggerstr.length + 2, ' ') + key + '\n'
+            } else {
+                np += key + '\n'
+            }
+        }
     });
     $('#nearbyPlayers-sm').text(ply);
     $('#nearbyNpcs-sm').text(np);
