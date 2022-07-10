@@ -126,8 +126,9 @@ function renderMapOverlay() {
     $('#shield').css('width', parseInt(json.hero.shieldPercent * 100) + '%')
     $('#status').text(json.module.status);
 
+    console.log
     if (json.hero.target.isValid) {
-        $('#target').css('display', 'block')
+        $('#target').css('display', '')
         $('#targetName').text(json.hero.target.name)
         if (json.hero.target.isEnemy) {
             $('#targetName').css('color', colors.enemies)
@@ -238,6 +239,23 @@ function renderNearby() {
             }
         }
     });
+
+    if (json.map.players.length === 0) {
+        $('#nearbyPlayersTitle-sm').css('display', 'none')
+        $('#nearbyPlayersTitle-md').css('display', 'none')
+    } else {
+        $('#nearbyPlayersTitle-sm').css('display', '')
+        $('#nearbyPlayersTitle-md').css('display', '')
+    }
+
+    if (json.map.npcs.length === 0) {
+        $('#nearbyNpcsTitle-sm').css('display', 'none')
+        $('#nearbyNpcsTitle-md').css('display', 'none')
+    } else {
+        $('#nearbyNpcsTitle-sm').css('display', '')
+        $('#nearbyNpcsTitle-md').css('display', '')
+    }
+
     $('#nearbyPlayers-sm').text(ply);
     $('#nearbyNpcs-sm').text(np);
     $('#nearbyPlayers-md').text(ply);

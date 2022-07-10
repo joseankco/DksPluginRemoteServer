@@ -49,8 +49,8 @@
             }
         </style>
     </head>
-    <body>
-        <div class="container-fluid text-white bg-color">
+    <body class="bg-color">
+        <div class="container-fluid text-white">
             <div class="row p-1">
                 <div class="col">
                     <button id="start" class="btn btn-primary btn-block my-2" onclick="startStream()">start</button>
@@ -111,11 +111,11 @@
                                 </div>
                             </div>
                             <div class="row mt-2 d-none d-md-flex">
-                                <div class="col">
+                                <div class="col-12 col-lg-6" id="nearbyNpcsTitle-md">
                                     <h4 class="mb-1">nearby npcs</h4>
                                     <p class="text-muted text-monospace mb-1" style="white-space: pre-wrap" id="nearbyNpcs-md"></p>
                                 </div>
-                                <div class="col">
+                                <div class="col-12 col-lg-6" id="nearbyPlayersTitle-md">
                                     <h4 class="mb-1">nearby players</h4>
                                     <p class="text-muted mb-1" style="white-space: pre-line" id="nearbyPlayers-md"></p>
                                 </div>
@@ -173,11 +173,11 @@
                                     <p id="targetName" class="mt-2 mb-0 font-weight-bold"></p>
                                 </div>
                                 <div class="col-12">
-                                    <div id="targetHpw" class="progress bg-success-op mt-1">
+                                    <div id="targetHpw" class="progress bg-success-op position-relative mt-1">
                                         <div id="targetHp" class="progress-bar bg-success" role="progressbar"></div>
                                         <p id="targetHp-desc" class="margin-inner-progress justify-content-center font-weight-bold d-flex position-absolute w-100 text-light mb-0"></p>
                                     </div>
-                                    <div id="targetShieldw" class="progress bg-primary-op mt-1">
+                                    <div id="targetShieldw" class="progress bg-primary-op position-relative mt-1">
                                         <div id="targetShield" class="progress-bar" role="progressbar"></div>
                                         <p id="targetShield-desc" class="margin-inner-progress justify-content-center font-weight-bold d-flex position-absolute w-100 text-light mb-0"></p>
                                     </div>
@@ -186,11 +186,11 @@
                         </div>
                     </div>
                     <div class="row mt-2 d-flex d-md-none">
-                        <div class="col">
+                        <div class="col-12" id="nearbyNpcsTitle-sm">
                             <h4 class="mb-1">nearby npcs</h4>
                             <p class="text-muted text-monospace mb-1" style="white-space: pre-wrap" id="nearbyNpcs-sm"></p>
                         </div>
-                        <div class="col">
+                        <div class="col-12" id="nearbyPlayersTitle-sm">
                             <h4 class="mb-1">nearby players</h4>
                             <p class="text-muted mb-1" style="white-space: pre-line" id="nearbyPlayers-sm"></p>
                         </div>
