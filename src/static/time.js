@@ -199,7 +199,7 @@ function renderLogsViewer() {
             errLines.forEach(function(line) {
                 strErrLines = strErrLines + line + '\n'
             })
-            $('#log-std-lines').text(strErrLines);
+            $('#log-err-lines').text(strErrLines);
         }
     }
 }
