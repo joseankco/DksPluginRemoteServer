@@ -8,8 +8,6 @@
         <script src="../static/jquery-2.1.4.js"></script>
         <script src="../static/time.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
         <style>
             .bg-color {
                 background-color: rgb(60, 60, 60);
@@ -21,6 +19,10 @@
 
             .bg-color-dark {
                 background-color: #343a40 !important;
+            }
+
+            .bg-color-darker {
+                background-color: #242424;
             }
 
             .container-fluid {
@@ -53,8 +55,8 @@
         <div class="container-fluid text-white">
             <div class="row p-1">
                 <div class="col">
-                    <button id="start" class="btn btn-primary btn-block my-2" onclick="startStream()">start</button>
-                    <button id="stop" class="btn btn-primary btn-block my-2" onclick="stopStream()">stop</button>
+                    <button id="start" class="btn btn-primary btn-block my-2" onclick="startStatsStream()">start</button>
+                    <button id="stop" class="btn btn-primary btn-block my-2" onclick="stopStatsStream()">stop</button>
                 </div>
             </div>
             <nav>
@@ -63,6 +65,7 @@
                 <a class="nav-item nav-link text-white" id="logs-viewer-tab" data-toggle="tab" href="#logs-viewer" role="tab" aria-controls="logs-viewer" aria-selected="false">Logs</a>
                 <a class="nav-item nav-link text-white" id="log-scrapper-tab" data-toggle="tab" href="#log-scrapper" role="tab" aria-controls="log-scrapper" aria-selected="false">Scrapper</a>
                 <a class="nav-item nav-link text-white" id="palladium-stats-tab" data-toggle="tab" href="#palladium-stats" role="tab" aria-controls="palladium-stats" aria-selected="false">Palladium</a>
+                <a class="nav-item nav-link text-white" id="stats-tab" data-toggle="tab" href="#stats" role="tab" aria-controls="stats" aria-selected="false">Stats</a>
               </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -249,7 +252,69 @@
                         </div>
                     </div>
                 </div>
+                <div class="tab-pane fade" role="tabpanel" aria-labelledby="stats-tab" id="stats">
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="h5 mb-1">Ranking Points</p>
+                        </div>
+                        <div class="col-6 text-right">
+                            <p class="h5 mb-1" id="rankDataLastCheck">Last Check</p>
+                        </div>
+                        <div class="col-12">
+                            <table class="table table-sm table-dark text-center" id="ranksDataTable">
+                                <thead>
+                                    <tr>
+                                      <th scope="col">rank</th>
+                                      <th scope="col">points</th>
+                                      <th scope="col">earned</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="upperRankDesc">0</td>
+                                        <td id="upperRankPoints">0</td>
+                                        <td id="upperRankDiff">0</td>
+                                    </tr>
+                                    <tr class="bg-color-darker">
+                                        <td id="currentRankDesc">0</td>
+                                        <td id="currentRankPoints">0</td>
+                                        <td id="currentRankDiff">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td id="lowerRankDesc">0</td>
+                                        <td id="lowerRankPoints">0</td>
+                                        <td id="lowerRankDiff">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="h5 mb-1">Hangar</p>
+                        </div>
+                        <div class="col-6 text-right">
+                            <p class="h5 mb-1" id="hangarDataLastCheck">Last Check</p>
+                        </div>
+                        <div class="col-12">
+                            <table class="table table-sm table-dark text-center" id="hangarDataTable">
+                                <thead>
+                                    <tr>
+                                      <th scope="col">item</th>
+                                      <th scope="col">amount</th>
+                                      <th scope="col">earned</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="hangarDataTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
 </html>

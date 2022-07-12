@@ -1,6 +1,9 @@
-var endpoint_stream = "stream"
-var websocket_stream = {};
+var stats_endpoint = "stats"
+var charts_endpoint = "charts"
+var stats_websocket = {};
+var charts_websocket = {};
 var json = {}
+var json_charts = {}
 
 var maxX = 20900;
 var maxY = 13400;
@@ -19,6 +22,8 @@ var colors = {
     npcs: '#c90d0d',
     hero: '#48ed00'
 }
+
+var rankChart = null;
 
 function transformX(x) {
     const w = $('#map').get(0).width;
@@ -41,16 +46,17 @@ function closeWebSocket(socket) {
     }  
 }
 
-function startStream() {
-    var url = urlWebSocket + endpoint_stream;
-    closeWebSocket(websocket_stream);
-    initStreamWebSocket(url);
+function startStatsStream() {
+    closeWebSocket(stats_websocket);
+    closeWebSocket(charts_websocket);
+    initStatsWebSocket(urlWebSocket + stats_endpoint);
     $('#start').hide();
     $('#stop').show();
 }
 
-function stopStream() {
-    closeWebSocket(websocket_stream);
+function stopStatsStream() {
+    closeWebSocket(stats_websocket);
+    closeWebSocket(charts_websocket);
     $('#start').show();
     $('#stop').hide();
 }
@@ -280,13 +286,12 @@ function renderDataTable() {
     $('#earnedHourHonor').text(parseInt(json.stats.earnedHonor / (json.stats.runningTimeSeconds / 3600)).toLocaleString())
 }
 
-function initStreamWebSocket(urlWebSocket)
+function initStatsWebSocket(url)
 {
-    $('#server').text(urlWebSocket);
-    websocket_stream = {
+    stats_websocket = {
         connect : function() {
             try {
-                this._ws = new WebSocket(urlWebSocket);
+                this._ws = new WebSocket(url);
                 this._ws.onmessage = this._onmessage;
             } catch(exception) { }
         },
@@ -301,6 +306,7 @@ function initStreamWebSocket(urlWebSocket)
             if (m.data) {
                 // $('#timeWebSocket').text(m.data);
                 json = JSON.parse(m.data);
+                console.log('New Stats Message')
                 if (!firstInit) {
                     initMap();
                 }
@@ -311,11 +317,64 @@ function initStreamWebSocket(urlWebSocket)
                 renderLogScrapper();
                 renderPalladiumStats();
                 renderLogsViewer();
+                renderRanksTable();
+                renderHangarTable();
             }
         },
     };
+    stats_websocket.connect();
+}
 
-    websocket_stream.connect();
+function renderRanksTable() {
+    URL = 'https://darkorbit-22.bpsecure.com/do_img/global/ranks/rank_'
+    if (json.rankData) {
+        $('#rankDataLastCheck').text(new Date(Math.round(json.rankData.now.tick)).toTimeString().split(' ')[0])
+        $('#upperRankDesc').empty()
+        $('#upperRankDesc').text(json.rankData.now.upper.name)
+        $('#upperRankDesc').append($('<img>', {src: URL + json.rankData.now.upper.img}))
+        $('#upperRankPoints').text(parseInt(json.rankData.now.upper.points).toLocaleString())
+        $('#upperRankDiff').text(parseInt(json.rankData.diff.upper).toLocaleString())
+
+        $('#currentRankDesc').empty()
+        $('#currentRankDesc').text(json.rankData.now.current.name)
+        $('#currentRankDesc').append($('<img>', {src: URL + json.rankData.now.current.img}))
+        $('#currentRankPoints').text(parseInt(json.rankData.now.current.points).toLocaleString())
+        $('#currentRankDiff').text(parseInt(json.rankData.diff.current).toLocaleString())
+
+        $('#lowerRankDesc').empty()
+        $('#lowerRankDesc').text(json.rankData.now.lower.name)
+        $('#lowerRankDesc').append($('<img>', {src: URL + json.rankData.now.lower.img}))
+        $('#lowerRankPoints').text(parseInt(json.rankData.now.lower.points).toLocaleString())
+        $('#lowerRankDiff').text(parseInt(json.rankData.diff.lower).toLocaleString())
+    }
+}
+
+function renderHangarTable() {
+    if (!!json.hangarData) {
+        $('#hangarDataLastCheck').text(new Date(json.hangarData.diff.tick).toTimeString().split(' ')[0])
+        var items = json.hangarData.now.items
+        if (items?.length > 0) {
+            $("#hangarDataTableBody").empty();
+            items.forEach(function(item) {
+                var diff = json.hangarData.diff.differences.find(function(d) {
+                    return d.lootId === item.loot_id;
+                }).diff;
+                $("#hangarDataTableBody")
+                    .append($('<tr>')
+                        .append($('<td>')
+                            .attr('scope', 'row')
+                            .text(item.name)
+                        )
+                        .append($('<td>')
+                            .text(item.quantity)
+                        )
+                        .append($('<td>')
+                            .text(diff)
+                        )
+                    )
+            })
+        }
+    }    
 }
 
 function initMap() {

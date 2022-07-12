@@ -11,11 +11,13 @@ from pathlib import Path
 import io
 from colorama import *
 import webbrowser
+from Manager import ManagerSingleton
 
 init()
 
 NGROK_PATH = str(Path.home()) + '\\ngrok\\ngrok.exe'
 conf.set_default(PyngrokConfig(ngrok_path=NGROK_PATH))
+
 
 def parse_args():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -59,6 +61,7 @@ class FlaskServerApp(object):
         self.args = parse_args()
         self.flask_app = flask_app
         self.flask_thread: threading.Thread = threading.Thread()
+        self.manager_api = ManagerSingleton()
         self.qrcode = None
         self.tunnel = None
 
@@ -125,10 +128,13 @@ class FlaskServerApp(object):
         self.run_flask_thread()
         if self.should_run_ngrok():
             self.run_ngrok()
+        self.manager_api.run_thread()
+        self.run_gui()
 
     def kill(self):
         ngrok.kill()
         self.flask_thread.kill_receive = True
+        self.manager_api.thread.kill_receive = True
         sys.exit()
 
     def run_gui(self):
