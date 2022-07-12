@@ -2,7 +2,7 @@ from flask import Flask, request, render_template
 from flask_sock import Sock
 import sys
 import os
-import queue
+import json
 from FlaskServerApp import FlaskServerApp
 import logging
 
@@ -21,10 +21,21 @@ else:
 sock = Sock(app)
 
 
+def parse_post_data(data):
+    global manager_api
+
+    # INSTANCE, DOSID
+    sesion = data.get('sesion')
+    del data['sesion']
+
+    return data
+
+
 @app.route('/', methods=['POST'])
 def result():
     global server_data
-    server_data = str(request.data.decode('utf-8'))
+    response = parse_post_data(request.get_json())
+    server_data = json.dumps(response, default=lambda x: x.__dict__)
     return '200'
 
 
