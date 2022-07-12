@@ -1,5 +1,48 @@
 import base64
+from enum import Enum
 from time import time
+
+
+class ItemTypes(Enum):
+    SHIP_MODULE = 1
+    AMMO_LASER = 2
+    AMMO_ROCKET = 3
+    AMMO_SPECIAL = 4
+    AMMO = 5
+    EQUIPMENT = 6
+    DRONE_DESIGN = 7
+    DRONE_FORMATION = 8
+    ORE = 9
+    RESOURCE = 10
+    RESOURCE_COLLECTABLE = 11
+    EQUIPMENT_WEAPON = 12
+    EQUIPMENT_GENERATOR = 13
+    PETGEAR = 14
+    PETPROTOCOL = 15
+
+    def get_str(self):
+        switcher = {
+            1: '_shipupgrade_',
+            2: 'ammunition_laser_',
+            3: 'ammunition_rocket',
+            4: 'ammunition_specialammo_',
+            5: 'ammunition_',
+            6: 'equipment_',
+            7: 'drone_designs_',
+            8: 'drone_formation_',
+            9: 'resource_ore_',
+            10: 'resource_',
+            11: 'resource_collectable_',
+            12: 'equipment_weapon_',
+            13: 'equipment_generator_',
+            14: '_petgear_',
+            15: '_aiprotocol_',
+        }
+        return switcher.get(self.value, '')
+
+    def __str__(self):
+        return self.get_str()
+
 
 class HangarShipDTO(object):
     def __init__(self, hangar):
@@ -78,6 +121,9 @@ class ItemDTO(object):
     def is_ship_module(self):
         return self.ship_upgrade_ships is not None
 
+    def is_type_of(self, of: ItemTypes):
+        return of.get_str() in self.loot_desc
+
     def __str__(self):
         base = 'item=[lootID: {}, loot: {}, name={}, quantity={}]'.format(
             self.loot_id, self.loot_desc, self.name, self.quantity
@@ -121,6 +167,13 @@ class HangarItemsDTO(object):
                 modules.append(item)
         return modules
 
+    def get_by_item_type(self, item_type: ItemTypes):
+        itms = []
+        for item in self.items:
+            if item_type.get_str() in item.loot_desc:
+                itms.append(item)
+        return itms
+
     def __str__(self):
         res = 'hangar_items={\n'
         for item in self.items:
@@ -147,7 +200,7 @@ class HangarItemsDiffDTO(object):
                 })
 
 
-class RankDataTransferDTO(object):
+class HangarDataTransferDTO(object):
     def __init__(self, init: HangarItemsDTO, now: HangarItemsDTO, diff: HangarItemsDiffDTO):
         self.init = init
         self.now = now

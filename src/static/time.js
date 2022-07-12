@@ -318,7 +318,10 @@ function initStatsWebSocket(url)
                 renderPalladiumStats();
                 renderLogsViewer();
                 renderRanksTable();
-                renderHangarTable();
+                renderHangarTable('#ammoLaserDataTableBody', json.hangarData?.items?.ammo_laser);
+                renderHangarTable('#ammoRocketDataTableBody', json.hangarData?.items?.ammo_rockets);
+                renderHangarTable('#resourcesDataTableBody', json.hangarData?.items?.resources);
+                renderHangarTable('#oreDataTableBody', json.hangarData?.items?.ore);
             }
         },
     };
@@ -327,7 +330,7 @@ function initStatsWebSocket(url)
 
 function renderRanksTable() {
     URL = 'https://darkorbit-22.bpsecure.com/do_img/global/ranks/rank_'
-    if (json.rankData) {
+    if (!!json.rankData && !!json.rankData.now) {
         $('#rankDataLastCheck').text(new Date(Math.round(json.rankData.now.tick)).toTimeString().split(' ')[0])
         $('#upperRankDesc').empty()
         $('#upperRankDesc').text(json.rankData.now.upper.name)
@@ -349,27 +352,26 @@ function renderRanksTable() {
     }
 }
 
-function renderHangarTable() {
-    if (!!json.hangarData) {
+function renderHangarTable(id, items) {
+    if (!!json.hangarData && !!json.hangarData.diff) {
         $('#hangarDataLastCheck').text(new Date(json.hangarData.diff.tick).toTimeString().split(' ')[0])
-        var items = json.hangarData.now.items
         if (items?.length > 0) {
-            $("#hangarDataTableBody").empty();
+            $(id).empty();
             items.forEach(function(item) {
                 var diff = json.hangarData.diff.differences.find(function(d) {
                     return d.lootId === item.loot_id;
                 }).diff;
-                $("#hangarDataTableBody")
+                $(id)
                     .append($('<tr>')
                         .append($('<td>')
                             .attr('scope', 'row')
                             .text(item.name)
                         )
                         .append($('<td>')
-                            .text(item.quantity)
+                            .text(parseInt(item.quantity).toLocaleString())
                         )
                         .append($('<td>')
-                            .text(diff)
+                            .text(parseInt(diff).toLocaleString())
                         )
                     )
             })

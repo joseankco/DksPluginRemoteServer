@@ -7,7 +7,7 @@ import requests
 import base64
 
 from RankTypes import RankDataTransferDTO, RankUtils, RankDataDiffDTO, RankDataDTO
-from HangarTypes import HangarListDTO, HangarItemsDTO, HangarItemsDiffDTO
+from HangarTypes import HangarListDTO, HangarItemsDTO, HangarItemsDiffDTO, HangarDataTransferDTO, ItemTypes
 
 
 # MANAGER API
@@ -104,7 +104,7 @@ class HangarAPI(ManagerAbstract):
         super().__init__()
         self.active_hangar = None
         self.data_charts = []
-        self.data: RankDataTransferDTO = RankDataTransferDTO(None, None, None)
+        self.data: HangarDataTransferDTO = HangarDataTransferDTO(None, None, None)
         self.hangar_list: HangarListDTO = None
         self.hangar_items: HangarItemsDTO = None
 
@@ -174,6 +174,56 @@ class HangarAPI(ManagerAbstract):
         if self.is_valid_instance():
             return self.get_url() + action.get_str()
         return None
+
+    # override
+    def get_data(self):
+        if self.data.now is None or self.data.now.items is None:
+            return {}
+
+        modules = []
+        ammo_laser = []
+        ammo_rockets = []
+        generators = []
+        weapons = []
+        pet = []
+        resources = []
+        ore = []
+        drones = []
+
+        for item in self.data.now.items:
+            if item.is_type_of(ItemTypes.ORE):
+                ore.append(item)
+            elif item.is_type_of(ItemTypes.RESOURCE):
+                resources.append(item)
+            elif item.is_ship_module():
+                modules.append(item)
+            elif item.is_type_of(ItemTypes.AMMO_LASER):
+                ammo_laser.append(item)
+            elif item.is_type_of(ItemTypes.AMMO_ROCKET):
+                ammo_rockets.append(item)
+            elif item.is_type_of(ItemTypes.EQUIPMENT_GENERATOR):
+                generators.append(item)
+            elif item.is_type_of(ItemTypes.EQUIPMENT_WEAPON):
+                weapons.append(item)
+            elif item.is_type_of(ItemTypes.DRONE_DESIGN) or item.is_type_of(ItemTypes.DRONE_FORMATION):
+                drones.append(item)
+            elif item.is_type_of(ItemTypes.PETGEAR) or item.is_type_of(ItemTypes.PETPROTOCOL):
+                pet.append(item)
+
+        return {
+            'diff': self.data.diff,
+            'items': {
+                'modules': modules,
+                'ammo_laser': ammo_laser,
+                'ammo_rockets': ammo_rockets,
+                'generators': generators,
+                'weapons': weapons,
+                'pet': pet,
+                'resources': resources,
+                'ore': ore,
+                'drones': drones
+            }
+        }
 
 
 # BACKPAGE
