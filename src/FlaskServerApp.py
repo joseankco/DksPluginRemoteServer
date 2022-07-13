@@ -1,5 +1,7 @@
 import sys
 import time
+
+import requests
 from flask import Flask
 import threading
 import argparse
@@ -11,11 +13,60 @@ from pathlib import Path
 import io
 from colorama import *
 import webbrowser
+import json
 
 init()
 
 NGROK_PATH = str(Path.home()) + '\\ngrok\\ngrok.exe'
 conf.set_default(PyngrokConfig(ngrok_path=NGROK_PATH))
+
+
+class Version(object):
+    def __init__(self):
+        self.version = '1.0.0'
+        self.min_plugin_version = '1.3.2'
+        self.url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/server.json'
+        self.update_url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/RemoteStatsServer.exe'
+        self.latest_version = None
+        self.latest_min_plugin_version = None
+
+    def load_latest_version(self):
+        try:
+            r = requests.get(url=self.url, timeout=5000)
+            data = json.loads(r.text.encode('utf-8').decode())
+            self.latest_version = data['version']
+            self.latest_min_plugin_version = data['minPluginVersion']
+        except Exception:
+            print('Fail while loading latest version')
+
+    def check_updates(self, print_uptodate=True):
+        self.load_latest_version()
+        if self.version == self.latest_version:
+            if print_uptodate:
+                print(self)
+                print(Fore.GREEN + 'Already up-to-date' + Fore.RESET)
+        else:
+            print(Fore.RED + 'Update Required')
+            print('Server Version: {} -> {}'.format(self.version, self.latest_version))
+            if self.min_plugin_version == self.latest_min_plugin_version:
+                print('Required DksPlugin Version: {}'.format(self.min_plugin_version))
+            else:
+                print('Required DksPlugin Version: {} -> {}'.format(self.min_plugin_version, self.latest_min_plugin_version))
+            print(Fore.RESET, end='')
+            print('Do you want to download the latest version? (y/N)')
+            key = input('> ')
+            if key.lower() in ['y', 'ye', 'yes', 'si', 'sí', 's']:
+                print(self.update_url)
+                webbrowser.open(self.update_url, new=2)
+            exit(0)
+
+    def __str__(self):
+        return Fore.GREEN +\
+               'Server Version: ' + self.version +\
+               '\nRequired DksPlugin Version: ' + self.min_plugin_version +\
+               Fore.RESET\
+
+
 
 def parse_args():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -120,6 +171,7 @@ class FlaskServerApp(object):
         print('    {}'.format(self.tunnel.public_url))
         print()
         print('k=kill, r=refresh, w=ngrok path, d=donate')
+        print('       v=version, u=check updates')
 
     def run(self):
         self.run_flask_thread()
@@ -133,7 +185,8 @@ class FlaskServerApp(object):
 
     def run_gui(self):
         try:
-            key = None
+            os.system('cls')
+            Version().check_updates(False)
             while True:
                 self.print_status()
                 key = input('> ')
@@ -154,6 +207,12 @@ class FlaskServerApp(object):
                     print(url)
                     webbrowser.open(url, new=2)
                     print(Fore.RESET, end='')
+                    time.sleep(5)
+                elif key.lower() in ['v', 'version', '!v', '!version']:
+                    print(str(Version()))
+                    time.sleep(5)
+                elif key.lower() in ['u', 'updates', '!u', '!updates']:
+                    Version().check_updates()
                     time.sleep(5)
         except KeyboardInterrupt:
             self.kill()
