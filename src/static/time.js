@@ -194,14 +194,6 @@ function renderLogsViewer() {
             })
             $('#log-std-lines').text(strStdLines);
         }
-        var errLines = json.plugin.liveLogs.lastErrLogs
-        if (errLines?.length > 0) {
-            var strErrLines = ''
-            errLines.forEach(function(line) {
-                strErrLines = strErrLines + line + '\n'
-            })
-            $('#log-err-lines').text(strErrLines);
-        }
     }
 }
 
