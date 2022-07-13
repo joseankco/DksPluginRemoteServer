@@ -1,3 +1,5 @@
+import time
+
 from flask import Flask, request, render_template
 from flask_sock import Sock
 import sys
@@ -51,6 +53,7 @@ def echo(ws):
         if server_data is not None:
             ws.send(server_data)
             server_data = None
+        time.sleep(1)
 
 
 def main():
