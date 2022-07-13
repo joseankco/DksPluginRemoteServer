@@ -1,4 +1,6 @@
 import json
+import time
+
 from flask import Flask, request, render_template
 from flask_sock import Sock
 import sys
@@ -7,12 +9,14 @@ from FlaskServerApp import FlaskServerApp
 import logging
 
 from Manager import ManagerSingleton, ManagerAPI
+from PalladiumStats import PalladiumStatsAPI, PalladiumStatsSingleton
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 server_data: str = None
 manager_api: ManagerAPI = ManagerSingleton()
+palladium_api: PalladiumStatsAPI = PalladiumStatsSingleton()
 
 if getattr(sys, 'frozen', False):
     template_folder = os.path.join(sys._MEIPASS, 'templates')
@@ -48,6 +52,9 @@ def parse_post_data(data):
 
     rank_data = manager_api.backpage.get_data()
     hangar_data = manager_api.hangar.get_data()
+    data['charts'] = {}
+    if palladium_api.add_data(data['plugin']['palladiumStats']):
+        data['charts']['palladiumStats'] = palladium_api.get_data()
 
     if rank_data is not None and rank_data.now is not None:
         if rank_data.now.tick != rank_data_last_tick:
@@ -83,6 +90,7 @@ def echo_stats(ws):
             if server_data is not None:
                 ws.send(server_data)
                 server_data = None
+            time.sleep(1)
     except Exception as e:
         reset_ticks()
         print(e)

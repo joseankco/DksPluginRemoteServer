@@ -322,6 +322,8 @@ function initStatsWebSocket(url)
                 renderHangarTable('#ammoRocketDataTableBody', json.hangarData?.items?.ammo_rockets);
                 renderHangarTable('#resourcesDataTableBody', json.hangarData?.items?.resources);
                 renderHangarTable('#oreDataTableBody', json.hangarData?.items?.ore);
+                renderPalladiumHourChart();
+                renderPalladiumTotalChart();
             }
         },
     };
@@ -377,6 +379,91 @@ function renderHangarTable(id, items) {
             })
         }
     }    
+}
+
+function getData(data, color) {
+    return {
+        labels: json.charts.palladiumStats.map(d => d.tick),
+        datasets: [
+          {
+            data: json.charts.palladiumStats.map(d => d[data]),
+            borderColor: color,
+            backgroundColor: color,
+          },
+        ]
+    };
+}
+
+function getConfig(data, title) {
+    return {
+        type: 'line',
+        data,
+        options: {
+            elements: {
+                point:{
+                    radius: 0
+                }
+            },
+            responsive: true,
+            interaction: {
+            mode: 'index',
+            intersect: false,
+            },
+            plugins: {
+            title: {
+                display: true,
+                text: title
+            },
+            legend: {
+                display: false
+            }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'hour'
+                    }
+                }
+            }
+        },
+    };
+}
+
+var palladiumHourChart = null;
+function renderPalladiumHourChart() {
+    if (!(json?.charts?.palladiumStats)) {
+        return;
+    }
+    if (!!palladiumHourChart) {
+        var len = json.charts.palladiumStats.length
+        palladiumHourChart.data.labels.push(json.charts.palladiumStats[len - 1].tick)
+        palladiumHourChart.data.datasets[0].data.push(json.charts.palladiumStats[len - 1].totalh)
+        palladiumHourChart.update('none')
+    } else {
+        const data = getData('totalh', 'blue')
+        const config = getConfig(data, 'Collected per Hour')
+        const ctx = document.getElementById('palladiumHourChart').getContext('2d');
+        palladiumHourChart = new Chart(ctx, config);
+    }
+}
+
+var palladiumTotalChart = null;
+function renderPalladiumTotalChart() {
+    if (!(json?.charts?.palladiumStats)) {
+        return;
+    }
+    if (!!palladiumTotalChart) {
+        var len = json.charts.palladiumStats.length
+        palladiumTotalChart.data.labels.push(json.charts.palladiumStats[len - 1].tick)
+        palladiumTotalChart.data.datasets[0].data.push(json.charts.palladiumStats[len - 1].total)
+        palladiumTotalChart.update('none')
+    } else {
+        const data = getData('total', 'green')
+        const config = getConfig(data, 'Total Collected')
+        const ctx = document.getElementById('palladiumTotalChart').getContext('2d');
+        palladiumTotalChart = new Chart(ctx, config);
+    }
 }
 
 function initMap() {
