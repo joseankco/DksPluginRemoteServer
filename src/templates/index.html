@@ -51,10 +51,15 @@
     </head>
     <body class="bg-color">
         <div class="container-fluid text-white">
+            <div class="row px-1 pt-1">
+                <div class="col">
+                    <p class="mb-0"><b>Status: </b><span id="statusConn">waiting for user action</span></p>
+                </div>
+            </div>
             <div class="row p-1">
                 <div class="col">
-                    <button id="start" class="btn btn-primary btn-block my-2" onclick="startStream()">start</button>
-                    <button id="stop" class="btn btn-primary btn-block my-2" onclick="stopStream()">stop</button>
+                    <button id="start" class="btn btn-primary btn-block mb-2 mt-0" onclick="startStream()">start</button>
+                    <button id="stop" class="btn btn-primary btn-block mb-2 mt-0" onclick="stopStream()">stop</button>
                 </div>
             </div>
             <nav>

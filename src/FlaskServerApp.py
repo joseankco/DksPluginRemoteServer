@@ -23,7 +23,7 @@ conf.set_default(PyngrokConfig(ngrok_path=NGROK_PATH))
 
 class Version(object):
     def __init__(self):
-        self.version = '1.0.3'
+        self.version = '1.0.4'
         self.min_plugin_version = '1.3.3'
         self.url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/server.json'
         self.update_url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/RemoteStatsServer.exe'

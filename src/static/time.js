@@ -20,6 +20,8 @@ var colors = {
     hero: '#48ed00'
 }
 
+var hasError = false;
+
 function transformX(x) {
     const w = $('#map').get(0).width;
     return parseInt((x / json.map.boundX) * w)
@@ -45,12 +47,20 @@ function startStream() {
     var url = urlWebSocket + endpoint_stream;
     closeWebSocket(websocket_stream);
     initStreamWebSocket(url);
+    $('#statusConn').text('connecting...')
+}
+
+function doStartButtons() {
     $('#start').hide();
     $('#stop').show();
 }
 
 function stopStream() {
     closeWebSocket(websocket_stream);
+    $('#statusConn').text('closing connection...')
+}
+
+function doCloseButtons() {
     $('#start').show();
     $('#stop').hide();
 }
@@ -280,7 +290,25 @@ function initStreamWebSocket(urlWebSocket)
             try {
                 this._ws = new WebSocket(urlWebSocket);
                 this._ws.onmessage = this._onmessage;
-            } catch(exception) { }
+                this._ws.onopen = function() {
+                    $('#statusConn').text('connected');
+                    doStartButtons();
+                    hasError = false;
+                }
+                this._ws.onerror = function(e) {
+                    hasError = true;
+                    $('#statusConn').text('an error has occurred, try again (may fail several times)');
+                }
+                this._ws.onclose = function() {
+                    if (!hasError) {
+                        $('#statusConn').text('connection closed');
+                    }
+                    doCloseButtons();
+                }
+            } catch(exception) {
+                hasError = true;
+                $('#statusConn').text('an exception has occurred, try again (may fail several times)');
+            }
         },
         
         close: function() {
@@ -291,7 +319,7 @@ function initStreamWebSocket(urlWebSocket)
         
         _onmessage : function(m) {
             if (m.data) {
-                // $('#timeWebSocket').text(m.data);
+                $('#statusConn').text('connected. last refresh was at ' + new Date().toLocaleTimeString());
                 json = JSON.parse(m.data);
                 if (!firstInit) {
                     initMap();
