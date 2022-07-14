@@ -23,7 +23,7 @@ conf.set_default(PyngrokConfig(ngrok_path=NGROK_PATH))
 
 class Version(object):
     def __init__(self):
-        self.version = '1.0.1'
+        self.version = '1.0.3'
         self.min_plugin_version = '1.3.3'
         self.url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/server.json'
         self.update_url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/RemoteStatsServer.exe'
@@ -49,9 +49,9 @@ class Version(object):
             print(Fore.RED + 'Update Required')
             print('Server Version: {} -> {}'.format(self.version, self.latest_version))
             if self.min_plugin_version == self.latest_min_plugin_version:
-                print('Required DksPlugin Version: {}'.format(self.min_plugin_version))
+                print('Minimum Required DksPlugin Version: {}'.format(self.min_plugin_version))
             else:
-                print('Required DksPlugin Version: {} -> {}'.format(self.min_plugin_version, self.latest_min_plugin_version))
+                print('Minimum Required DksPlugin Version: {} -> {}'.format(self.min_plugin_version, self.latest_min_plugin_version))
             print(Fore.RESET, end='')
             print('Do you want to download the latest version? (y/N)')
             key = input('> ')
@@ -63,7 +63,7 @@ class Version(object):
     def __str__(self):
         return Fore.GREEN +\
                'Server Version: ' + self.version +\
-               '\nRequired DksPlugin Version: ' + self.min_plugin_version +\
+               '\nMinimum Required DksPlugin Version: ' + self.min_plugin_version +\
                Fore.RESET\
 
 
@@ -140,7 +140,7 @@ class FlaskServerApp(object):
         if self.get_auth_token() is not None:
             ngrok.set_auth_token(self.get_auth_token())
 
-        self.tunnel = ngrok.connect(self.get_port())
+        self.tunnel = ngrok.connect(self.get_port(), bind_tls=True)
 
     def refresh_ngrok(self):
         ngrok.kill()
@@ -169,6 +169,7 @@ class FlaskServerApp(object):
         get_banner()
         self.plot_qrcode()
         print('    {}'.format(self.tunnel.public_url))
+        print(Fore.RED + 'This URL contains your IP. Share at your own risk.' + Fore.RESET)
         print()
         print('k=kill, r=refresh, w=ngrok path, d=donate')
         print('       v=version, u=check updates')

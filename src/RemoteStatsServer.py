@@ -1,5 +1,6 @@
 import time
 
+from colorama import Fore
 from flask import Flask, request, render_template
 from flask_sock import Sock
 import sys
@@ -65,6 +66,7 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except Exception:
-        input("Exception.")
-
+    except Exception as e:
+        if 'The authtoken you specified does not look like a proper ngrok tunnel authtoken' in str(e):
+            print(Fore.RED + 'An error occurred with your Auth Token. Try to reset it at '
+                             'https://dashboard.ngrok.com/get-started/your-authtoken and reconfigure the plugin.' + Fore.RESET)
