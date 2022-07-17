@@ -36,7 +36,7 @@ class Version(object):
             data = json.loads(r.text.encode('utf-8').decode())
             self.latest_version = data['version']
             self.latest_min_plugin_version = data['minPluginVersion']
-        except Exception:
+        except BaseException as exc:
             print('Fail while loading latest version')
 
     def check_updates(self, print_uptodate=True):
@@ -85,7 +85,9 @@ def parse_args():
 
     parser.add_argument('--ngrok', dest='run_ngrok', action='store_true')
     parser.add_argument('--no-ngrok', dest='run_ngrok', action='store_false')
-    parser.set_defaults(run_ngrok=True)
+    parser.add_argument('--hashed', dest='run_hashed', action='store_true')
+    parser.add_argument('--no-hashed', dest='run_hashed', action='store_false')
+    parser.set_defaults(run_ngrok=True, run_hashed=True)
 
     return parser.parse_args()
 
@@ -121,6 +123,9 @@ class FlaskServerApp(object):
 
     def get_auth_token(self):
         return self.args.token
+
+    def get_hashed(self):
+        return self.args.run_hashed
 
     def run_flask_app(self):
         self.flask_app.run(host=self.get_host(), port=self.get_port())

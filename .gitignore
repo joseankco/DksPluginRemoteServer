@@ -1,6 +1,8 @@
-build/
-dist/
-__pycache__/
-venv/
+backend/build/
+backend/dist/
+backend/__pycache__/
+backend/venv/
 .idea/
 *.spec
+backend/src/static/
+backend/src/templates/
