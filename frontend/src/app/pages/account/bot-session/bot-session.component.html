@@ -1,0 +1,61 @@
+<ng-container *ngIf="data">
+  <div class="row">
+    <div class="col-12 col-lg-8 mt-2">
+      <app-bot-map [data]="data"></app-bot-map>
+    </div>
+    <div class="col-12 col-lg-4 mt-2">
+      <div class="row">
+        <div class="col">
+          <div class="table-responsive">
+            <table class="table table-sm table-dark text-center">
+              <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">total</th>
+                <th scope="col">earned</th>
+                <th scope="col">earned/h</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <th scope="row">uri</th>
+                <td class="align-middle">{{data.stats.totalUridium | asNumber}}</td>
+                <td class="align-middle">{{data.stats.earnedUridium | asNumber}}</td>
+                <td class="align-middle">{{data.stats.earnedUridium | perHour: data.stats.runningTimeSeconds}}</td>
+              </tr>
+              <tr>
+                <th scope="row">cre</th>
+                <td class="align-middle">{{data.stats.totalCredits | asNumber}}</td>
+                <td class="align-middle">{{data.stats.earnedCredits | asNumber}}</td>
+                <td class="align-middle">{{data.stats.earnedCredits | perHour: data.stats.runningTimeSeconds}}</td>
+              </tr>
+              <tr>
+                <th scope="row">exp</th>
+                <td class="align-middle">{{data.stats.totalExperience | asNumber}}</td>
+                <td class="align-middle">{{data.stats.earnedExperience | asNumber}}</td>
+                <td class="align-middle">{{data.stats.earnedExperience | perHour: data.stats.runningTimeSeconds}}</td>
+              </tr>
+              <tr>
+                <th scope="row">hon</th>
+                <td class="align-middle">{{data.stats.totalHonor | asNumber}}</td>
+                <td class="align-middle">{{data.stats.earnedHonor | asNumber}}</td>
+                <td class="align-middle">{{data.stats.earnedHonor | perHour: data.stats.runningTimeSeconds}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12" *ngIf="!!data?.map?.npcs && data.map.npcs.length > 0">
+          <p class="fw-bold mb-0">nearby npcs</p>
+          <p class="font-monospace text-muted pre-wrap">{{getNpcList()}}</p>
+        </div>
+        <div class="col-12" *ngIf="!!data?.map?.players && data.map.players.length > 0">
+          <p class="fw-bold mb-0">nearby players</p>
+          <p class="text-muted pre-wrap">{{getPlayerList()}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

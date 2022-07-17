@@ -1,0 +1,64 @@
+.bg-color {
+  background-color: rgb(60, 60, 60);
+}
+
+.bg-color-light {
+  background-color: rgb(120, 120, 120);
+}
+
+.bg-color-dark22 {
+  background-color: #343a40 !important;
+}
+
+.bg-color-dark {
+  background-color: #212529 !important;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+  color: white;
+  background-color: rgb(60, 60, 60) !important;
+}
+
+.bg-primary-op {
+  background-color: #0275d84D;
+}
+
+.bg-success-op {
+  background-color: #5cb85c4D;
+}
+
+.bg-warning-op {
+  background-color: #f0ad4e4D;
+}
+
+.img-icon {
+  height: 30px;
+}
+
+.img-icon-sm {
+  height: 20px;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
+.very-small {
+  font-size: 0.700em;
+}
+
+.transparent {
+  opacity: 0;
+}
+
+.table-dark {
+  --bss-table-bg: #343a40 !important;
+}

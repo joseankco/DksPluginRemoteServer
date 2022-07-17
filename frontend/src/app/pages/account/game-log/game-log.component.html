@@ -1,0 +1,8 @@
+<ng-container *ngIf="data">
+  <div class="row">
+    <div class="col">
+      <label class="col-form-label fw-bold">Game Logs</label>
+      <textarea class="form-control bg-color-dark text-light" rows="15" disabled>{{ getLogLines() }}</textarea>
+    </div>
+  </div>
+</ng-container>

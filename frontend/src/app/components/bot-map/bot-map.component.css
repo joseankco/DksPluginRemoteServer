@@ -1,0 +1,46 @@
+.wrapper {
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  color: white;
+  padding: 5px;
+  overflow: hidden;
+}
+
+.map-name {
+  position: absolute;
+  top: 45%;
+}
+
+.stats {
+  position: absolute;
+  top: 35px;
+}
+
+.hero-info {
+  position:absolute;
+  bottom: 15px;
+  left: 5px;
+  padding: 0;
+  width: 48%;
+}
+
+.target-info {
+  position:absolute;
+  bottom: 15px;
+  right: 5px;
+  padding: 0;
+  width: 48%;
+}
+
+.view-button {
+  position:absolute;
+  top: 25px;
+  right: 5px;
+}

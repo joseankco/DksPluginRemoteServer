@@ -1,0 +1,91 @@
+<div class="row">
+  <div class="col">
+    <div class="wrapper">
+      <canvas #map
+              class="rounded border bg-color-light"
+              [style]="{
+              'background': 'url(' + background + ')',
+              'background-size': '100% 100%'
+            }"
+      ></canvas>
+      <div class="overlay">
+        <div class="row very-small">
+          <div class="col-10 text-start ps-3 pe-0 my-auto no-wrap">
+            {{data.module.status}}
+          </div>
+          <div class="col-2 text-end ps-0 pe-3 my-auto no-wrap">
+            {{data.stats.ping}}ms
+          </div>
+        </div>
+      </div>
+      <div class="overlay">
+        <div class="row">
+          <div class="col text-center map-name">
+            <p class="h6 mb-0">{{data.map.name}}</p>
+            <p class="small mb-0">{{data.stats.runningTime}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="overlay font-monospace">
+        <div class="row">
+          <div class="col stats ps-3">
+            <p class="very-small mb-0">cre/h {{ data.stats.earnedCredits | perHour: data.stats.runningTimeSeconds }}</p>
+            <p class="very-small mb-0">uri/h {{ data.stats.earnedUridium | perHour: data.stats.runningTimeSeconds }}</p>
+            <p class="very-small mb-0">exp/h {{ data.stats.earnedExperience | perHour: data.stats.runningTimeSeconds }}</p>
+            <p class="very-small mb-0">hon/h {{ data.stats.earnedHonor | perHour: data.stats.runningTimeSeconds }}</p>
+            <p class="very-small mb-0">cargo {{ data.stats.cargo }}/{{ data.stats.maxCargo }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="overlay">
+        <div class="row">
+          <div class="hero-info">
+            <div class="col text-center">
+              <p class="fw-bold small mb-0 text-white">{{data | asUsername}}</p>
+            </div>
+            <div class="progress bg-warning-op position-relative mt-1" [hidden]="data.hero.hull === 0">
+              <div class="progress-bar bg-warning" role="progressbar" [style]="{'width': data.hero.hullPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                {{ data.hero.hull.toLocaleString() }} / {{ data.hero.maxHull.toLocaleString() }}
+              </p>
+            </div>
+            <div class="progress bg-success-op position-relative mt-1">
+              <div class="progress-bar bg-success" role="progressbar" [style]="{'width': data.hero.hpPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                {{ data.hero.hp.toLocaleString() }} / {{ data.hero.maxHp.toLocaleString() }}
+              </p>
+            </div>
+            <div class="progress bg-primary-op position-relative mt-1" [ngClass]="{'transparent': data.hero.maxShield === 0}">
+              <div class="progress-bar" role="progressbar" [style]="{'width': data.hero.shieldPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                {{ data.hero.shield.toLocaleString() }} / {{ data.hero.maxShield.toLocaleString() }}
+              </p>
+            </div>
+          </div>
+          <div class="target-info" *ngIf="data.hero.target.isValid">
+            <div class="col text-center">
+              <p class="fw-bold small mb-0" [style]="{'color': getTargetColor()}">{{data.hero.target.name}}</p>
+            </div>
+            <div class="progress bg-success-op position-relative mt-1">
+              <div class="progress-bar bg-success" role="progressbar" [style]="{'width': data.hero.target.hpPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                {{ data.hero.target.hp.toLocaleString() }} / {{ data.hero.target.maxHp.toLocaleString() }}
+              </p>
+            </div>
+            <div class="progress bg-primary-op position-relative mt-1" [ngClass]="{'transparent': data.hero.target.maxShield === 0}">
+              <div class="progress-bar" role="progressbar" [style]="{'width': data.hero.target.shieldPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                {{ data.hero.target.shield.toLocaleString() }} / {{ data.hero.target.maxShield.toLocaleString() }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="overlay" *ngIf="!darkbot.isSingle()">
+        <button class="btn bg-transparent btn-sm view-button">
+          <img class="img-fluid img-icon-sm" src="assets/visibility.png" alt="" routerLink="/account/{{data.hero.id}}/session">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

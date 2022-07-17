@@ -1,0 +1,11 @@
+<div class="row my-2">
+  <div class="col px-0">
+    <span>
+      <button class="btn bg-transparent btn-sm" [disabled]="isDisabled()">
+        <img class="img-fluid img-icon" [src]="getAsset()" alt="" (click)="doAction()">
+      </button>
+      <span class="h6 text-white fw-bold align-middle">{{darkbot.getStatusMessage()}}</span>
+      <span class="h6 text-white fw-bold align-middle" *ngIf="darkbot.getLastReceived()">. last refresh at {{darkbot.getLastReceived()}}</span>
+    </span>
+  </div>
+</div>

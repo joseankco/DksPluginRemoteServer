@@ -1,0 +1,21 @@
+<ng-container *ngIf="data">
+  <div class="row">
+    <div class="col">
+      <p class="mb-0 fw-bold">status:
+        <span class="fw-normal">{{data.plugin.palladiumStats.status}}</span>
+      </p>
+      <p class="mb-0 fw-bold">running time:
+        <span class="fw-normal">{{data.plugin.palladiumStats.runningTime}}</span>
+      </p>
+      <p class="mb-0 fw-bold">palladium collected:
+        <span class="fw-normal">{{data.plugin.palladiumStats.total}}</span>
+      </p>
+      <p class="mb-0 fw-bold">palladium/h:
+        <span class="fw-normal">{{data.plugin.palladiumStats.totalh}}</span>
+      </p>
+      <p class="mb-0 fw-bold">ee/h:
+        <span class="fw-normal">{{data.plugin.palladiumStats.eeh}}</span>
+      </p>
+    </div>
+  </div>
+</ng-container>

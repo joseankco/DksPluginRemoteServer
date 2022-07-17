@@ -1,0 +1,28 @@
+<ng-container *ngIf="data">
+  <div class="row">
+    <div class="col">
+      <div class="table-responsive">
+        <table class="table table-sm table-dark text-center">
+          <thead>
+          <tr>
+            <th scope="col">pattern</th>
+            <th scope="col">occ.</th>
+            <th scope="col">occ./h</th>
+            <th scope="col">total</th>
+            <th scope="col">total/h</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let pattern of data.plugin.logScrapper.patterns">
+            <th scope="row">{{pattern.pattern}}</th>
+            <td class="align-middle">{{pattern.occurrences}}</td>
+            <td class="align-middle">{{pattern.occurrencesh}}</td>
+            <td class="align-middle">{{pattern.total}}</td>
+            <td class="align-middle">{{pattern.totalh}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>
