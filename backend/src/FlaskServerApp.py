@@ -5,8 +5,9 @@ import requests
 from flask import Flask
 import threading
 import argparse
-from pyngrok import ngrok, conf
+from pyngrok import ngrok, conf, installer
 from pyngrok.conf import PyngrokConfig
+import ssl
 import qrcode
 import os
 from pathlib import Path
@@ -21,10 +22,19 @@ NGROK_PATH = str(Path.home()) + '\\ngrok\\ngrok.exe'
 conf.set_default(PyngrokConfig(ngrok_path=NGROK_PATH))
 
 
+def install_ngrok():
+    pyngrok_config = conf.get_default()
+    if not os.path.exists(pyngrok_config.ngrok_path):
+        myssl = ssl.create_default_context()
+        myssl.check_hostname = False
+        myssl.verify_mode = ssl.CERT_NONE
+        installer.install_ngrok(pyngrok_config.ngrok_path, context=myssl)
+
+
 class Version(object):
     def __init__(self):
-        self.version = '1.0.4'
-        self.min_plugin_version = '1.3.3'
+        self.version = '2.0.1'
+        self.min_plugin_version = '1.3.7'
         self.url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/server.json'
         self.update_url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/RemoteStatsServer.exe'
         self.latest_version = None
@@ -58,7 +68,8 @@ class Version(object):
             if key.lower() in ['y', 'ye', 'yes', 'si', 'sí', 's']:
                 print(self.update_url)
                 webbrowser.open(self.update_url, new=2)
-            exit(0)
+            if key.lower() != 'imadevxd':
+                exit(0)
 
     def __str__(self):
         return Fore.GREEN +\
@@ -109,6 +120,9 @@ def get_banner():
 
 class FlaskServerApp(object):
     def __init__(self, flask_app: Flask):
+        print('Checking for updates...')
+        Version().check_updates(False)
+        install_ngrok()
         self.args = parse_args()
         self.flask_app = flask_app
         self.flask_thread: threading.Thread = threading.Thread()
@@ -191,8 +205,6 @@ class FlaskServerApp(object):
 
     def run_gui(self):
         try:
-            os.system('cls')
-            Version().check_updates(False)
             while True:
                 self.print_status()
                 key = input('> ')
