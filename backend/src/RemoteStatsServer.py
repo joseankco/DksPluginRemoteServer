@@ -179,14 +179,16 @@ def main():
     server_app = FlaskServerApp(app)
     is_server_hashed = server_app.get_hashed()
     server_app.run()
-    server_app.run_gui()
 
 
 if __name__ == '__main__':
     try:
         main()
+    except SystemExit:
+        pass
     except BaseException as e:
         if 'The authtoken you specified does not look like a proper ngrok tunnel authtoken' in str(e):
             print(Fore.RED + 'An error occurred with your Auth Token. Try to reset it at '
                              'https://dashboard.ngrok.com/get-started/your-authtoken and reconfigure the plugin.' + Fore.RESET)
+        print('Exception:', e)
         input()

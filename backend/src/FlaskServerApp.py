@@ -137,6 +137,9 @@ class FlaskServerApp(object):
     def get_auth_token(self):
         return self.args.token
 
+    def get_hashed(self):
+        return self.args.run_hashed
+
     def run_flask_app(self):
         self.flask_app.run(host=self.get_host(), port=self.get_port())
 
@@ -193,11 +196,12 @@ class FlaskServerApp(object):
         self.run_flask_thread()
         if self.should_run_ngrok():
             self.run_ngrok()
+        self.run_gui()
 
     def kill(self):
         ngrok.kill()
         self.flask_thread.kill_receive = True
-        sys.exit()
+        sys.exit(0)
 
     def run_gui(self):
         try:
