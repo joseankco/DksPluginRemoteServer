@@ -61,7 +61,8 @@ class Version(object):
             if self.min_plugin_version == self.latest_min_plugin_version:
                 print('Minimum Required DksPlugin Version: {}'.format(self.min_plugin_version))
             else:
-                print('Minimum Required DksPlugin Version: {} -> {}'.format(self.min_plugin_version, self.latest_min_plugin_version))
+                print('Minimum Required DksPlugin Version: {} -> {}'.format(self.min_plugin_version,
+                                                                            self.latest_min_plugin_version))
             print(Fore.RESET, end='')
             print('Do you want to download the latest version? (y/N)')
             key = input('> ')
@@ -72,11 +73,10 @@ class Version(object):
                 exit(0)
 
     def __str__(self):
-        return Fore.GREEN +\
-               'Server Version: ' + self.version +\
-               '\nMinimum Required DksPlugin Version: ' + self.min_plugin_version +\
-               Fore.RESET\
-
+        return Fore.GREEN + \
+               'Server Version: ' + self.version + \
+               '\nMinimum Required DksPlugin Version: ' + self.min_plugin_version + \
+               Fore.RESET
 
 
 def parse_args():
@@ -99,7 +99,6 @@ def parse_args():
     parser.add_argument('--hashed', dest='run_hashed', action='store_true')
     parser.add_argument('--no-hashed', dest='run_hashed', action='store_false')
     parser.set_defaults(run_ngrok=True, run_hashed=True)
-
     return parser.parse_args()
 
 
@@ -137,9 +136,6 @@ class FlaskServerApp(object):
 
     def get_auth_token(self):
         return self.args.token
-
-    def get_hashed(self):
-        return self.args.run_hashed
 
     def run_flask_app(self):
         self.flask_app.run(host=self.get_host(), port=self.get_port())

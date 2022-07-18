@@ -1,4 +1,3 @@
-import argparse
 import time
 import hashlib
 from colorama import Fore
@@ -9,6 +8,12 @@ import os
 import json
 from FlaskServerApp import FlaskServerApp
 import logging
+
+# API Backend
+from Manager import ManagerSingleton, ManagerAPI
+from PalladiumStats import PalladiumStatsAPI, PalladiumStatsSingleton
+manager_api: ManagerAPI = ManagerSingleton()
+palladium_api: PalladiumStatsAPI = PalladiumStatsSingleton()
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -27,6 +32,17 @@ server_fails_hash = {}
 TICK_FAIL_LIMIT = 60
 is_server_hashed = False
 
+# API Backend
+rank_data_last_tick = 0
+hangar_data_last_tick = 0
+
+
+def reset_ticks():
+    global rank_data_last_tick
+    global hangar_data_last_tick
+    rank_data_last_tick = 0
+    hangar_data_last_tick = 0
+
 
 def hash_string_md5(s):
     return hashlib.md5(s.encode('utf-8')).hexdigest()
@@ -34,10 +50,27 @@ def hash_string_md5(s):
 
 def parse_post_data(data):
     global manager_api
+    global rank_data_last_tick
+    global hangar_data_last_tick
 
     # INSTANCE, DOSID
-    # sesion = data.get('sesion')
+    sesion = data.get('sesion')
     del data['sesion']
+
+    rank_data = manager_api.backpage.get_data()
+    hangar_data = manager_api.hangar.get_data()
+    data['charts'] = {}
+    if palladium_api.add_data(data['plugin']['palladiumStats']):
+        data['charts']['palladiumStats'] = palladium_api.get_data()
+
+    if rank_data is not None and rank_data.now is not None:
+        if rank_data.now.tick != rank_data_last_tick:
+            data['rankData'] = rank_data
+            rank_data_last_tick = rank_data.now.tick
+    if hangar_data is not None and 'diff' in hangar_data.keys():
+        if hangar_data['diff'].tick != hangar_data_last_tick:
+            data['hangarData'] = hangar_data
+            hangar_data_last_tick = hangar_data['diff'].tick
 
     return data
 
@@ -125,16 +158,19 @@ def get_single_data(accid):
 def echo(ws):
     global server_data_hash
 
-    while True:
-        accid = get_param(request)
-        if accid is not None:
-            data = get_single_data(accid)
-            if data is not None:
+    try:
+        while True:
+            accid = get_param(request)
+            if accid is not None:
+                data = get_single_data(accid)
+                if data is not None:
+                    ws.send(parse_data_to_json(data))
+            elif server_data_hash != {}:
+                data = get_multiple_data()
                 ws.send(parse_data_to_json(data))
-        elif server_data_hash != {}:
-            data = get_multiple_data()
-            ws.send(parse_data_to_json(data))
-        time.sleep(1)
+            time.sleep(1)
+    except BaseException as e:
+        reset_ticks()
 
 
 def main():
