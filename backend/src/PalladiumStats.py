@@ -1,16 +1,13 @@
 from time import time
 
 
-class PalladiumStatsSingleton(object):
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = PalladiumStatsAPI()
-        return cls.instance
-
-
 class PalladiumStatsAPI(object):
-    def __init__(self):
+    def __init__(self, aid: str):
+        self.aid = aid
         self.data = []
+
+    def get_id(self):
+        return self.aid
 
     def add_data(self, data):
         value = PalladiumStatsData(data)
@@ -29,7 +26,7 @@ class PalladiumStatsAPI(object):
                 p2 = first[i + 1]
                 p = PalladiumStatsData(None)
                 p.set_data(
-                    (p1.tick + p2.tick)/2,
+                    (p1.tick + p2.tick) / 2,
                     (p1.total + p2.total) / 2,
                     (p1.totalh + p2.totalh) / 2,
                     (p1.eeh + p2.eeh) / 2
@@ -61,3 +58,23 @@ class PalladiumStatsData(object):
 
     def get_is_valid(self):
         return self.is_valid
+
+
+class PalladiumStatsSingleton(object):
+    instance: list[PalladiumStatsAPI] = []
+
+    def __new__(cls, aid: str):
+        inst = cls.get_instance(aid)
+        if inst is None:
+            inst = PalladiumStatsAPI(aid)
+            cls.instance.append(inst)
+        return inst
+
+    @classmethod
+    def get_instance(cls, aid: str):
+        if cls.instance is None or len(cls.instance) == 0:
+            return None
+        for inst in cls.instance:
+            if inst.get_id() == aid:
+                return inst
+        return None

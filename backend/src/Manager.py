@@ -12,11 +12,15 @@ from HangarTypes import HangarListDTO, HangarItemsDTO, HangarItemsDiffDTO, Hanga
 
 # MANAGER API
 class ManagerAbstract(object):
-    def __init__(self):
+    def __init__(self, aid: str):
+        self.aid = aid
         self.sid = None
         self.instance = None
         self.useragent = 'BigpointClient/1.6.3'
         self.data = None
+
+    def get_id(self):
+        return self.aid
 
     def set_sesion(self, instance, sid):
         self.instance = instance
@@ -43,18 +47,15 @@ class ManagerAbstract(object):
         pass
 
 
-class ManagerSingleton(object):
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = ManagerAPI()
-        return cls.instance
-
-
 class ManagerAPI(object):
-    def __init__(self):
-        self.backpage = BackPageSingleton()
-        self.hangar = HangarSingleton()
+    def __init__(self, aid: str):
+        self.aid = aid
+        self.backpage = BackPageSingleton(aid)
+        self.hangar = HangarSingleton(aid)
         self.thread = threading.Thread()
+
+    def get_id(self):
+        return self.aid
 
     def run(self):
         while True:
@@ -65,7 +66,7 @@ class ManagerAPI(object):
 
     def run_thread(self):
         if self.thread.is_alive():
-            self.thread.kill_receive = True
+            return
 
         self.thread = threading.Thread(target=self.run)
         self.thread.daemon = True
@@ -74,6 +75,26 @@ class ManagerAPI(object):
     def set_sesion(self, instance, sid):
         self.backpage.set_sesion(instance, sid)
         self.hangar.set_sesion(instance, sid)
+
+
+class ManagerSingleton(object):
+    instance: list[ManagerAPI] = []
+
+    def __new__(cls, aid: str):
+        inst = cls.get_instance(aid)
+        if inst is None:
+            inst = ManagerAPI(aid)
+            cls.instance.append(inst)
+        return inst
+
+    @classmethod
+    def get_instance(cls, aid: str):
+        if cls.instance is None or len(cls.instance) == 0:
+            return None
+        for inst in cls.instance:
+            if inst.get_id() == aid:
+                return inst
+        return None
 
 
 # HANGAR
@@ -92,16 +113,9 @@ class HangarActions(Enum):
         return self.get_str()
 
 
-class HangarSingleton(object):
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = HangarAPI()
-        return cls.instance
-
-
 class HangarAPI(ManagerAbstract):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, aid: str):
+        super().__init__(aid)
         self.active_hangar = None
         self.data_charts = []
         self.data: HangarDataTransferDTO = HangarDataTransferDTO(None, None, None)
@@ -226,6 +240,26 @@ class HangarAPI(ManagerAbstract):
         }
 
 
+class HangarSingleton(object):
+    instance: list[HangarAPI] = []
+
+    def __new__(cls, aid: str):
+        inst = cls.get_instance(aid)
+        if inst is None:
+            inst = HangarAPI(aid)
+            cls.instance.append(inst)
+        return inst
+
+    @classmethod
+    def get_instance(cls, aid: str):
+        if cls.instance is None or len(cls.instance) == 0:
+            return None
+        for inst in cls.instance:
+            if inst.get_id() == aid:
+                return inst
+        return None
+
+
 # BACKPAGE
 class BackPageActions(Enum):
     START = 1
@@ -252,16 +286,9 @@ class BackPageActions(Enum):
         return self.get_str()
 
 
-class BackPageSingleton(object):
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = BackPageAPI()
-        return cls.instance
-
-
 class BackPageAPI(ManagerAbstract):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, aid: str):
+        super().__init__(aid)
         self.data_charts = []
         self.data: RankDataTransferDTO = RankDataTransferDTO(None, None, None)
 
@@ -298,4 +325,24 @@ class BackPageAPI(ManagerAbstract):
     def get_url_action(self, action: BackPageActions):
         if self.is_valid_instance():
             return self.get_url() + action.get_str()
+        return None
+
+
+class BackPageSingleton(object):
+    instance: list[BackPageAPI] = []
+
+    def __new__(cls, aid: str):
+        inst = cls.get_instance(aid)
+        if inst is None:
+            inst = BackPageAPI(aid)
+            cls.instance.append(inst)
+        return inst
+
+    @classmethod
+    def get_instance(cls, aid: str):
+        if cls.instance is None or len(cls.instance) == 0:
+            return None
+        for inst in cls.instance:
+            if inst.get_id() == aid:
+                return inst
         return None

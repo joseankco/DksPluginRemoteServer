@@ -12,8 +12,6 @@ import logging
 # API Backend
 from Manager import ManagerSingleton, ManagerAPI
 from PalladiumStats import PalladiumStatsAPI, PalladiumStatsSingleton
-manager_api: ManagerAPI = ManagerSingleton()
-palladium_api: PalladiumStatsAPI = PalladiumStatsSingleton()
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -33,15 +31,17 @@ TICK_FAIL_LIMIT = 60
 is_server_hashed = False
 
 # API Backend
-rank_data_last_tick = 0
-hangar_data_last_tick = 0
+rank_data_last_tick = {}
+hangar_data_last_tick = {}
+manager_api: ManagerAPI = None
+palladium_api: PalladiumStatsAPI = None
 
 
 def reset_ticks():
     global rank_data_last_tick
     global hangar_data_last_tick
-    rank_data_last_tick = 0
-    hangar_data_last_tick = 0
+    rank_data_last_tick = {}
+    hangar_data_last_tick = {}
 
 
 def hash_string_md5(s):
@@ -50,6 +50,7 @@ def hash_string_md5(s):
 
 def parse_post_data(data):
     global manager_api
+    global palladium_api
     global rank_data_last_tick
     global hangar_data_last_tick
 
@@ -57,20 +58,41 @@ def parse_post_data(data):
     sesion = data.get('sesion')
     del data['sesion']
 
-    rank_data = manager_api.backpage.get_data()
-    hangar_data = manager_api.hangar.get_data()
-    data['charts'] = {}
-    if palladium_api.add_data(data['plugin']['palladiumStats']):
-        data['charts']['palladiumStats'] = palladium_api.get_data()
+    accid = str(data['hero']['id'])
+    if accid != '0':
 
-    if rank_data is not None and rank_data.now is not None:
-        if rank_data.now.tick != rank_data_last_tick:
+        data['hashed'] = is_server_hashed
+        if is_server_hashed:
+            accid = hash_string_md5(accid)
+            data['hero']['id'] = accid
+            data['hero']['username'] = hash_string_md5(data['hero']['username'])
+
+        if rank_data_last_tick.get(accid, None) is None:
+            rank_data_last_tick[accid] = {'tick': 0, 'sent': False}
+        if hangar_data_last_tick.get(accid, None) is None:
+            hangar_data_last_tick[accid] = {'tick': 0, 'sent': False}
+
+        manager_api = ManagerSingleton(accid)
+        manager_api.set_sesion(sesion['instance'], sesion['sid'])
+        manager_api.run_thread()
+        # palladium_api = PalladiumStatsSingleton(accid)
+
+        rank_data = manager_api.backpage.get_data()
+        hangar_data = manager_api.hangar.get_data()
+        # data['charts'] = {}
+        # if palladium_api.add_data(data['plugin']['palladiumStats']):
+            # data['charts']['palladiumStats'] = palladium_api.get_data()
+
+        if rank_data is not None and rank_data.now is not None:
             data['rankData'] = rank_data
-            rank_data_last_tick = rank_data.now.tick
-    if hangar_data is not None and 'diff' in hangar_data.keys():
-        if hangar_data['diff'].tick != hangar_data_last_tick:
+            if rank_data.now.tick != rank_data_last_tick[accid]['tick']:
+                rank_data_last_tick[accid] = {'tick': rank_data.now.tick, 'sent': False}
+        if hangar_data is not None and 'diff' in hangar_data.keys():
             data['hangarData'] = hangar_data
-            hangar_data_last_tick = hangar_data['diff'].tick
+            if hangar_data['diff'].tick != hangar_data_last_tick[accid]['tick']:
+                hangar_data_last_tick[accid] = {'tick': hangar_data['diff'].tick, 'sent': False}
+
+        server_data_hash[accid] = data
 
     return data
 
@@ -83,16 +105,7 @@ def parse_data_to_json(data):
 def result():
     global server_data_hash
     global is_server_hashed
-
-    response = parse_post_data(request.get_json())
-    accid = str(response['hero']['id'])
-    if accid != '0':
-        response['hashed'] = is_server_hashed
-        if is_server_hashed:
-            accid = hash_string_md5(accid)
-            response['hero']['id'] = accid
-            response['hero']['username'] = hash_string_md5(response['hero']['username'])
-        server_data_hash[accid] = response
+    parse_post_data(request.get_json())
     return '200'
 
 
@@ -119,6 +132,8 @@ def get_multiple_data():
     global server_ticks_hash
     global server_fails_hash
     global server_data_hash
+    global rank_data_last_tick
+    global hangar_data_last_tick
 
     array = [value for key, value in server_data_hash.items()]
     for data in array:
@@ -127,6 +142,13 @@ def get_multiple_data():
         accid = data['hero']['id']
         tick = server_ticks_hash.get(accid, -1)
         fails = server_fails_hash.get(accid, 0)
+
+        if 'rankData' in data.keys():
+            del data['rankData']
+
+        if 'hangarData' in data.keys():
+            del data['hangarData']
+
         if tick == -1 or data['tick'] != tick:
             server_ticks_hash[accid] = data['tick']
             server_fails_hash[accid] = 0
@@ -147,6 +169,21 @@ def get_single_data(accid):
     if accid in server_data_hash.keys():
         data = server_data_hash.get(accid)
         tick = server_ticks_hash.get(accid, -1)
+
+        if 'rankData' in data.keys():
+            if rank_data_last_tick[accid]['sent']:
+                del data['rankData']
+            else:
+                print('sent rank data', rank_data_last_tick[accid]['tick'], accid)
+                rank_data_last_tick[accid]['sent'] = True
+
+        if 'hangarData' in data.keys():
+            if hangar_data_last_tick[accid]['sent']:
+                del data['hangarData']
+            else:
+                print('sent hangar data:', hangar_data_last_tick[accid]['tick'], accid)
+                hangar_data_last_tick[accid]['sent'] = True
+
         if tick == -1 or data['tick'] != tick:
             server_ticks_hash[accid] = data['tick']
             server_fails_hash[accid] = 0
