@@ -62,3 +62,62 @@ body {
 .table-dark {
   --bss-table-bg: #343a40 !important;
 }
+
+.form-control {
+  background-color: rgb(42, 42, 42);
+  color: white;
+}
+
+.form-control:focus {
+  background-color: rgb(42, 42, 42);
+  color: white;
+}
+
+w-10 {
+  width: 10% !important;
+}
+
+w-20 {
+  width: 20% !important;
+}
+
+w-30 {
+  width: 30% !important;
+}
+
+w-40 {
+  width: 40% !important;
+}
+
+w-60 {
+  width: 60% !important;
+}
+
+w-70 {
+  width: 70% !important;
+}
+
+w-80 {
+  width: 80% !important;
+}
+
+w-90 {
+  width: 90% !important;
+}
+
+.link-unstyled, .link-unstyled:link, .link-unstyled:hover {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+a[aria-expanded="false"] img {
+  content: url("assets/visibility.png");
+}
+
+a[aria-expanded="true"] img {
+  content: url("assets/visibility-off.png");
+}

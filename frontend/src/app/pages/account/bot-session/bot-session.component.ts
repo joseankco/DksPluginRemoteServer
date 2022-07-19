@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {ServerResponse} from "../../../models/main.model";
 import {Subscription} from "rxjs";
 import {DarkBotService} from "../../../services/dark-bot.service";
+import {RankData} from "../../../models/rank-data.model";
+import {RankService} from "../../../services/rank.service";
 
 @Component({
   selector: 'app-bot-session',
@@ -11,24 +13,33 @@ import {DarkBotService} from "../../../services/dark-bot.service";
 export class BotSessionComponent implements OnInit {
 
   data!: ServerResponse;
-  subscription$!: Subscription;
+  rankData!: RankData;
+  subscription$: Subscription[] = [];
 
   constructor(
-    public darkbot: DarkBotService
+    public darkbot: DarkBotService,
+    public rankservice: RankService
   ) { }
 
   ngOnInit(): void {
-    this.subscription$ = this.darkbot.getData().subscribe(data => {
+    const sub = this.darkbot.getData().subscribe(data => {
       if (this.darkbot.isSingle()) {
         this.data = data as ServerResponse;
       } else {
         this.darkbot.disconnect();
       }
+    });
+    const sub2 = this.darkbot.getRankData().subscribe(rank => {
+      if (rank) {
+        this.rankData = rank;
+      }
     })
+    this.subscription$.push(sub);
+    this.subscription$.push(sub2);
   }
 
   ngOnDestroy() {
-    this.subscription$.unsubscribe();
+    this.subscription$.map(s => s.unsubscribe());
   }
 
   getNpcList() {

@@ -16,6 +16,10 @@ import { PalladiumStatsComponent } from './pages/account/palladium-stats/palladi
 import { AsUsernamePipe } from './pipes/as-username.pipe';
 import { AsNumberPipe } from './pipes/as-number.pipe';
 import { PerHourPipe } from './pipes/per-hour.pipe';
+import { StatsComponent } from './pages/account/stats/stats.component';
+import { TickAsTimePipe } from './pipes/tick-as-time.pipe';
+import { UpgradeModulesComponent } from './pages/account/upgrade-modules/upgrade-modules.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -31,13 +35,17 @@ import { PerHourPipe } from './pipes/per-hour.pipe';
     PalladiumStatsComponent,
     AsUsernamePipe,
     AsNumberPipe,
-    PerHourPipe
+    PerHourPipe,
+    StatsComponent,
+    TickAsTimePipe,
+    UpgradeModulesComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        FormsModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

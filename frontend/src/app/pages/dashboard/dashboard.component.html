@@ -1,7 +1,7 @@
 <app-header></app-header>
 <div class="container-fluid">
   <app-server-status></app-server-status>
-  <div class="row">
+  <div class="row" *ngIf="data">
     <div class="col-12 col-lg-6 mt-3 mt-md-2" *ngFor="let ship of data">
       <app-bot-map [data]="ship"></app-bot-map>
     </div>

@@ -2,6 +2,8 @@ import {Injectable, isDevMode} from '@angular/core';
 import {ReplaySubject} from "rxjs";
 import {ServerResponse} from "../models/main.model";
 import {ServerStatus} from "../models/server-status.model";
+import {RankData} from "../models/rank-data.model";
+import {HangarData} from "../models/hangar-data.model";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +15,8 @@ export class DarkBotService {
   private error: Event | undefined;
   private endpoint: string = 'stream';
   private data$: ReplaySubject<ServerResponse | ServerResponse[]> = new ReplaySubject<ServerResponse | ServerResponse[]>(1);
+  private rankData$: ReplaySubject<RankData | undefined> = new ReplaySubject<RankData | undefined>(1);
+  private hangarData$: ReplaySubject<HangarData | undefined> = new ReplaySubject<HangarData | undefined>(1);
   private lastReceived: Date | undefined;
   private lastData: ServerResponse | ServerResponse[] = [];
   private id: string = '';
@@ -90,6 +94,8 @@ export class DarkBotService {
       }
       this.websocket = undefined;
       this.id = '';
+      this.hangarData$.next(undefined);
+      this.rankData$.next(undefined);
     }
     this.websocket.onerror = (e) => {
       console.log('Error', e);
@@ -109,6 +115,12 @@ export class DarkBotService {
       if (this.isGettingArray) {
         this.lastReceived = new Date();
       } else {
+        if ((this.lastData as ServerResponse).rankData) {
+          this.rankData$.next((this.lastData as ServerResponse).rankData)
+        }
+        if ((this.lastData as ServerResponse).hangarData) {
+          this.hangarData$.next((this.lastData as ServerResponse).hangarData)
+        }
         this.lastReceived = new Date((this.lastData as ServerResponse).tick);
       }
       this.error = undefined;
@@ -156,5 +168,13 @@ export class DarkBotService {
 
   public getData() {
     return this.data$;
+  }
+
+  public getRankData() {
+    return this.rankData$;
+  }
+
+  public getHangarData() {
+    return this.hangarData$;
   }
 }

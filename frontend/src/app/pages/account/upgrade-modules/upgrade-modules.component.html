@@ -1,0 +1,124 @@
+<ng-container *ngIf="modules.length > 0">
+  <div class="row">
+    <div class="col">
+      <div class="table-responsive">
+        <table class="table table-sm table-dark text-center">
+          <thead>
+          <tr>
+            <th scope="col">type</th>
+            <th scope="col">total</th>
+            <th scope="col">earned</th>
+          </tr>
+          </thead>
+          <tbody>
+          <ng-container *ngFor="let key of ['DMG', 'SHD', 'HP', 'SPC']">
+            <tr *ngIf="getDiffValues(key) as values">
+              <th scope="row">{{key}}</th>
+              <th scope="row">{{values[0]}}</th>
+              <th scope="row">{{values[1]}}</th>
+            </tr>
+          </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="col-12 col-md-6">
+      <select class="form-control" [(ngModel)]="filterShip" name="filter-ship">
+        <option [ngValue]="''">All Ships</option>
+        <option [ngValue]="'ship_' + ship" *ngFor="let ship of ships">{{ship}}</option>
+      </select>
+    </div>
+    <div class="col col-12 col-md-6 mt-2 mt-md-auto">
+      <select class="form-control" [(ngModel)]="filterModifier" name="filter-ship">
+        <option [ngValue]="''">All Modifiers</option>
+        <option [ngValue]="modifier" *ngFor="let modifier of modifiers">{{modifier | lowercase}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="row mb-2 text-center">
+    <div class="no-wrap">
+      <div class="form-check form-check-inline form-switch">
+        <input class="form-check-input" [ngClass]="{'bg-danger': toggleDMG}"
+               [(ngModel)]="toggleDMG" type="checkbox" role="switch" id="toggler-dmg">
+        <label class="form-check-label" for="toggler-dmg">DMG</label>
+      </div>
+      <div class="form-check form-check-inline form-switch">
+        <input class="form-check-input" [ngClass]="{'bg-primary': toggleSHD}"
+               [(ngModel)]="toggleSHD" type="checkbox" role="switch" id="toggler-shd">
+        <label class="form-check-label" for="toggler-shd">SHD</label>
+      </div>
+      <div class="form-check form-check-inline form-switch">
+        <input class="form-check-input" [ngClass]="{'bg-success': toggleHP}"
+               [(ngModel)]="toggleHP" type="checkbox" role="switch" id="toggler-hp">
+        <label class="form-check-label" for="toggler-hp">HP</label>
+      </div>
+      <div class="form-check form-check-inline form-switch">
+        <input class="form-check-input" [ngClass]="{'bg-warning': toggleSPC}"
+               [(ngModel)]="toggleSPC" type="checkbox" role="switch" id="toggler-spc">
+        <label class="form-check-label" for="toggler-spc">SPC</label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="table-responsive">
+        <table class="table table-sm table-dark text-center">
+          <thead>
+          <tr>
+            <th scope="col">name</th>
+            <th scope="col">modifiers</th>
+            <th scope="col" *ngIf="!filterShip">ships</th>
+          </tr>
+          </thead>
+          <tbody>
+          <ng-container [ngTemplateOutlet]="moduleList"
+                        [ngTemplateOutletContext]="{type: 'DMG', modules: dmgModules, color: 'text-danger', toggler: toggleDMG}">
+          </ng-container>
+          <ng-container [ngTemplateOutlet]="moduleList"
+                        [ngTemplateOutletContext]="{type: 'SHD', modules: shdModules, color: 'text-primary', toggler: toggleSHD}">
+          </ng-container>
+          <ng-container [ngTemplateOutlet]="moduleList"
+                        [ngTemplateOutletContext]="{type: 'HP', modules: hpModules, color: 'text-success', toggler: toggleHP}">
+          </ng-container>
+          <ng-container [ngTemplateOutlet]="moduleList"
+                        [ngTemplateOutletContext]="{type: 'SPC', modules: spcModules, color: 'text-warning', toggler: toggleSPC}">
+          </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="modules.length === 0">
+  <div class="row">
+    <div class="col">
+      <p class="h5">No modules.</p>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #moduleList let-modules='modules' let-type='type' let-color='color' let-toggler='toggler'>
+  <ng-container *ngIf="toggler">
+    <ng-container>
+      <tr *ngFor="let module of modules">
+        <ng-container *ngIf="checkPassFilter(module)">
+          <th scope="row" class="align-middle" [ngClass]="color">{{module.name.replace(type + '-', '')}}</th>
+          <td class="align-middle no-wrap">
+            <ng-container *ngFor="let modifier of module.modifiers">
+              <p class="mb-0" [ngClass]="{'text-danger': modifier.value < 0, 'fw-bold text-info': filterModifier && filterModifier === modifier.desc}">
+                {{modifier.value}}% {{modifier.desc | lowercase}}
+              </p>
+            </ng-container>
+          </td>
+          <td class="align-middle" *ngIf="!filterShip">
+            {{getShips(module)}}
+          </td>
+        </ng-container>
+      </tr>
+    </ng-container>
+  </ng-container>
+</ng-template>
+

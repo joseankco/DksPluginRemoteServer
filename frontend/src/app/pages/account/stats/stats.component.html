@@ -1,0 +1,129 @@
+<ng-container *ngIf="rankData">
+  <div class="row">
+    <div class="col">
+      <div class="row">
+        <div class="col text-start">
+          <label class="fw-bold h5">Ranking Points</label>
+        </div>
+        <div class="col text-end">
+          <label class="fw-bold h5">checked at {{rankData.now.tick | tickAsTime}}</label>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-dark text-center">
+          <thead>
+          <tr>
+            <th scope="col">rank</th>
+            <th scope="col">points</th>
+            <th scope="col">diff</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <th scope="row">
+              <img class="img-fluid" [src]="rankservice.getRankUrl(rankData.now.upper.img)" [alt]="rankData.now.upper.img">
+              {{rankData.now.upper.name}}
+            </th>
+            <td class="align-middle">{{rankData.now.upper.points | asNumber}}</td>
+            <td class="align-middle">{{rankData.diff.upper}}</td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <img class="img-fluid img-icon-sm" [src]="rankservice.getRankUrl(rankData.now.current.img)" [alt]="rankData.now.current.img">
+              {{rankData.now.current.name}}
+            </th>
+            <td class="align-middle">{{rankData.now.current.points | asNumber}}</td>
+            <td class="align-middle">{{rankData.diff.current}}</td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <img class="img-fluid img-icon-sm" [src]="rankservice.getRankUrl(rankData.now.lower.img)" [alt]="rankData.now.lower.img">
+              {{rankData.now.lower.name}}
+            </th>
+            <td class="align-middle">{{rankData.now.lower.points | asNumber}}</td>
+            <td class="align-middle">{{rankData.diff.lower}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="hangarData">
+  <div class="row">
+    <div class="col">
+      <div class="row">
+        <div class="col text-start">
+          <label class="fw-bold h5">Hangar</label>
+        </div>
+        <div class="col text-end">
+          <label class="fw-bold h5">checked at {{hangarData.diff.tick | tickAsTime}}</label>
+        </div>
+      </div>
+      <ng-container
+        [ngTemplateOutlet]="itemGroup"
+        [ngTemplateOutletContext]="{title: 'resources', items: hangarData.items.resources}">
+      </ng-container>
+      <ng-container
+        [ngTemplateOutlet]="itemGroup"
+        [ngTemplateOutletContext]="{title: 'ore', items: hangarData.items.ore}">
+      </ng-container>
+      <ng-container
+        [ngTemplateOutlet]="itemGroup"
+        [ngTemplateOutletContext]="{title: 'laser ammo', items: hangarData.items.ammo_laser}">
+      </ng-container>
+      <ng-container
+        [ngTemplateOutlet]="itemGroup"
+        [ngTemplateOutletContext]="{title: 'rocket ammo', items: hangarData.items.ammo_rockets}">
+      </ng-container>
+      <ng-container
+        [ngTemplateOutlet]="itemGroup"
+        [ngTemplateOutletContext]="{title: 'drone related', items: hangarData.items.drones}">
+      </ng-container>
+      <ng-container
+        [ngTemplateOutlet]="itemGroup"
+        [ngTemplateOutletContext]="{title: 'pet related', items: hangarData.items.pet}">
+      </ng-container>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #itemGroup let-title='title' let-items='items'>
+  <div class="row" *ngIf="getValues(title) as v">
+    <div class="col">
+      <a class="col-form-label fw-bold link-unstyled cursor-pointer" #anchor
+         data-bs-toggle="collapse" [attr.data-bs-target]="'#' + title.replace(' ', '-')"
+         aria-expanded="false"
+         (click)="filter ? filter = '' : null"
+      >
+        <img class="img-fluid img-icon-sm" alt="none" src="assets/visibility.png">
+        {{title}}
+      </a>
+      <div class="collapse" id="{{title.replace(' ', '-')}}">
+        <div class="table-responsive">
+          <table class="table table-sm table-dark text-center">
+            <thead>
+            <tr>
+              <th scope="col" class="w-50">
+                <input class="form-control" [(ngModel)]="filter" placeholder="Filter...">
+              </th>
+              <th scope="col" class="w-25 align-middle">total</th>
+              <th scope="col" class="w-25 align-middle">earned</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of items">
+              <ng-container *ngIf="checkIfPassFilter(item.name)">
+                <th scope="row" class="w-50">{{item.name}}</th>
+                <td class="align-middle w-25">{{item.quantity | asNumber}}</td>
+                <td class="align-middle w-25">{{getItemDiff(item)}}</td>
+              </ng-container>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
