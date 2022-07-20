@@ -70,7 +70,6 @@ class ManagerAPI(object):
     def run_thread(self):
         if self.thread.is_alive():
             return
-        print('Running Thread', self.aid)
         self.thread = threading.Thread(target=self.run)
         self.thread.daemon = True
         self.thread.start()

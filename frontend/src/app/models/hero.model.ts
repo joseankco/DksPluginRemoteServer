@@ -13,7 +13,7 @@ export interface Target {
 }
 
 export interface Hero {
-  id: number;
+  id: string;
   x: number;
   y: number;
   configuration: string;

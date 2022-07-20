@@ -37,13 +37,16 @@ palladium_api: PalladiumStatsAPI = None
 
 manager_api_hash = {}
 palladium_api_hash = {}
+account_id = None
 
 
 def reset_ticks():
     global rank_data_last_tick
     global hangar_data_last_tick
+    global account_id
     rank_data_last_tick = {}
     hangar_data_last_tick = {}
+    account_id = None
 
 
 def hash_string_md5(s):
@@ -88,7 +91,7 @@ def parse_post_data(data):
         hangar_data = manager.hangar.get_data()
         # data['charts'] = {}
         # if palladium_api.add_data(data['plugin']['palladiumStats']):
-            # data['charts']['palladiumStats'] = palladium_api.get_data()
+        # data['charts']['palladiumStats'] = palladium_api.get_data()
 
         if rank_data is not None and rank_data.now is not None:
             data['rankData'] = rank_data
@@ -198,15 +201,26 @@ def get_single_data(accid):
     return None
 
 
+def process_input_message(command: str):
+    global account_id
+    if command is not None:
+        if command.startswith('switch'):
+            account_id = command.split(':')[1]
+        elif command == 'multiple':
+            account_id = None
+
+
 @sock.route('/stream')
 def echo(ws):
     global server_data_hash
+    global account_id
 
     try:
         while True:
-            accid = get_param(request)
-            if accid is not None:
-                data = get_single_data(accid)
+            # accid = get_param(request)
+            process_input_message(ws.receive(0))
+            if account_id is not None:
+                data = get_single_data(account_id)
                 if data is not None:
                     ws.send(parse_data_to_json(data))
             elif server_data_hash != {}:

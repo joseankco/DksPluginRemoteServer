@@ -1,29 +1,112 @@
 import {Injectable, isDevMode} from '@angular/core';
 import {ReplaySubject} from "rxjs";
 import {ServerResponse} from "../models/main.model";
-import {ServerStatus} from "../models/server-status.model";
 import {RankData} from "../models/rank-data.model";
 import {HangarData} from "../models/hangar-data.model";
+import WebSocketAsPromised from 'websocket-as-promised';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DarkBotService {
 
-  private websocket: WebSocket | undefined;
-  private status: ServerStatus = ServerStatus.DISCONNECTED;
+  private websocket: WebSocketAsPromised;
   private error: Event | undefined;
   private endpoint: string = 'stream';
+
   private data$: ReplaySubject<ServerResponse | ServerResponse[]> = new ReplaySubject<ServerResponse | ServerResponse[]>(1);
   private rankData$: ReplaySubject<RankData | undefined> = new ReplaySubject<RankData | undefined>(1);
   private hangarData$: ReplaySubject<HangarData | undefined> = new ReplaySubject<HangarData | undefined>(1);
+
   private lastReceived: Date | undefined;
   private lastData: ServerResponse | ServerResponse[] = [];
-  private id: string = '';
+
   private isGettingArray: boolean = true;
 
   constructor() {
+    this.websocket = new WebSocketAsPromised(this.getFullUrl());
+    this.websocket.onClose.addListener(this.onclose.bind(this));
+    this.websocket.onError.addListener(this.onerror.bind(this));
+    this.websocket.onOpen.addListener(this.onopen.bind(this));
+    this.websocket.onMessage.addListener(this.onmessage.bind(this));
+  }
 
+  public connect(id: string = '') {
+    if (id) {
+      return this.websocket.open().then(() => this.websocket.send('switch:' + id))
+    }
+    return this.websocket.open().then(() => this.websocket.send('multiple'))
+  }
+
+  public disconnect() {
+    return this.websocket.close();
+  }
+
+  public switch(id: string = '') {
+    if (this.isConnected()) {
+      if (id) {
+        this.trySendLastDataAsSingle(id);
+        this.websocket.send('switch:' + id);
+      } else {
+        this.sendEmptyMultipleData();
+        this.websocket.send('multiple');
+      }
+    }
+  }
+
+  private onopen() {
+    console.log('Connection Succesfully');
+    this.error = undefined;
+    this.lastReceived = undefined;
+  }
+
+  private onclose() {
+    if (!this.error) {
+      console.log('Connection Closed');
+    }
+    this.hangarData$.next(undefined);
+    this.rankData$.next(undefined);
+  }
+
+  private onerror(e: Event) {
+    console.log('Error', e);
+    this.error = e;
+  }
+
+  private onmessage(m: string) {
+    this.lastData = JSON.parse(m);
+    this.isGettingArray = Array.isArray(this.lastData);
+    this.data$.next(this.lastData);
+
+    if (this.isGettingArray) {
+      this.lastReceived = new Date();
+    } else {
+      if ((this.lastData as ServerResponse).rankData) {
+        this.rankData$.next((this.lastData as ServerResponse).rankData)
+      }
+      if ((this.lastData as ServerResponse).hangarData) {
+        this.hangarData$.next((this.lastData as ServerResponse).hangarData)
+      }
+      this.lastReceived = new Date((this.lastData as ServerResponse).tick);
+    }
+    this.error = undefined;
+    console.log(JSON.parse(m))
+  }
+
+  private trySendLastDataAsSingle(id: string) {
+    if (Array.isArray(this.lastData)) {
+      const data = (this.lastData as ServerResponse[]).find(r => r.hero.id === id);
+      if (data) {
+        this.isGettingArray = false;
+        this.lastData = data;
+        this.data$.next(data);
+      }
+    }
+  }
+
+  private sendEmptyMultipleData() {
+    this.isGettingArray = true;
+    this.data$.next([]);
   }
 
   public isSingle() {
@@ -31,38 +114,42 @@ export class DarkBotService {
   }
 
   public isConnected() {
-    return this.status === ServerStatus.CONNECTED;
+    return this.websocket.isOpened;
   }
 
   public isConnecting() {
-    return this.status === ServerStatus.CONNECTING;
+    return this.websocket.isOpening;
   }
 
   public isDisconnecting() {
-    return this.status === ServerStatus.DISCONNECTING;
+    return this.websocket.isClosing
+  }
+
+  public isDisconnected() {
+    return this.websocket.isClosed;
   }
 
   public hasError() {
-    return this.status === ServerStatus.ERRORED;
+    return !!this.error;
   }
 
   public getStatusMessage() {
-    switch (this.status) {
-      case ServerStatus.CONNECTED:
-        return 'connected';
-      case ServerStatus.DISCONNECTED:
-        return 'disconnected';
-      case ServerStatus.CONNECTING:
-        return 'connecting...';
-      case ServerStatus.DISCONNECTING:
-        return 'disconnecting...';
-      case ServerStatus.ERRORED:
-        return 'error, try again, may fail several times';
+    if (this.isConnected()) {
+      return 'connected';
     }
-  }
-
-  public getStatus() {
-    return this.status;
+    if (this.hasError()) {
+      return 'error, try again, may fail several times';
+    }
+    if (this.isDisconnected()) {
+      return 'disconnected';
+    }
+    if (this.isConnecting()) {
+      return 'connecting...';
+    }
+    if (this.isDisconnecting()) {
+      return 'disconnecting...';
+    }
+    return 'unknown status';
   }
 
   public getLastReceived() {
@@ -79,71 +166,6 @@ export class DarkBotService {
     return null;
   }
 
-  public connect(id: string = '') {
-    if (this.websocket) {
-      return;
-    }
-
-    this.id = id;
-    this.status = ServerStatus.CONNECTING;
-    this.websocket = new WebSocket(this.getFullUrl(id));
-    this.websocket.onclose = () => {
-      if (!this.error) {
-        console.log('Connection Closed');
-        this.status = ServerStatus.DISCONNECTED;
-      }
-      this.websocket = undefined;
-      this.id = '';
-      this.hangarData$.next(undefined);
-      this.rankData$.next(undefined);
-    }
-    this.websocket.onerror = (e) => {
-      console.log('Error', e);
-      this.status = ServerStatus.ERRORED;
-      this.error = e;
-    }
-    this.websocket.onopen = () => {
-      console.log('Connection Succesfully');
-      this.status = ServerStatus.CONNECTED;
-      this.error = undefined;
-      this.lastReceived = undefined;
-    }
-    this.websocket.onmessage = (m) => {
-      this.lastData = JSON.parse(m.data);
-      this.isGettingArray = Array.isArray(this.lastData);
-      this.data$.next(this.lastData);
-      if (this.isGettingArray) {
-        this.lastReceived = new Date();
-      } else {
-        if ((this.lastData as ServerResponse).rankData) {
-          this.rankData$.next((this.lastData as ServerResponse).rankData)
-        }
-        if ((this.lastData as ServerResponse).hangarData) {
-          this.hangarData$.next((this.lastData as ServerResponse).hangarData)
-        }
-        this.lastReceived = new Date((this.lastData as ServerResponse).tick);
-      }
-      this.error = undefined;
-      //console.log('Data Received At ' + this.lastReceived.toLocaleTimeString())
-      console.log(JSON.parse(m.data))
-    }
-  }
-
-  public disconnect() {
-    if (this.websocket) {
-      this.status = ServerStatus.DISCONNECTING;
-      this.websocket.close();
-    }
-  }
-
-  public refresh(id: string = '') {
-    if (this.websocket) {
-      this.websocket.close();
-      this.websocket = undefined;
-    }
-    this.connect(id);
-  }
-
   public getUrl() {
     if (!isDevMode()) {
       return window.location.origin
@@ -154,16 +176,12 @@ export class DarkBotService {
     }
   }
 
-  public getEndpoint(id: string = '') {
-    if (id === '') {
+  public getEndpoint() {
       return this.endpoint;
-    } else {
-      return this.endpoint + '?id=' + id;
-    }
   }
 
-  public getFullUrl(id: string = '') {
-    return this.getUrl() + '/' + this.getEndpoint(id);
+  public getFullUrl() {
+    return this.getUrl() + '/' + this.getEndpoint();
   }
 
   public getData() {

@@ -21,8 +21,6 @@ export class GameLogComponent implements OnInit, OnDestroy {
     this.subscription$ = this.darkbot.getData().subscribe(data => {
       if (this.darkbot.isSingle()) {
         this.data = data as ServerResponse;
-      } else {
-        this.darkbot.disconnect();
       }
     })
   }

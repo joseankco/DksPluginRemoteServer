@@ -14,7 +14,7 @@ import {UpgradeModulesComponent} from "./pages/account/upgrade-modules/upgrade-m
 const routes: Routes = [
   { path: '', component: AppComponent, canActivate: [ChangeConnectionGuard], children:
     [
-      { path: '', component: DashboardComponent },
+      { path: '', component: DashboardComponent, canActivate: [ChangeConnectionGuard] },
       { path: 'account/:id', component: AccountComponent, canActivate: [ChangeConnectionGuard], children:
         [
           { path: 'session', component: BotSessionComponent },

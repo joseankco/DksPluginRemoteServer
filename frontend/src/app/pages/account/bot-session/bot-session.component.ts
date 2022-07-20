@@ -25,8 +25,6 @@ export class BotSessionComponent implements OnInit {
     const sub = this.darkbot.getData().subscribe(data => {
       if (this.darkbot.isSingle()) {
         this.data = data as ServerResponse;
-      } else {
-        this.darkbot.disconnect();
       }
     });
     const sub2 = this.darkbot.getRankData().subscribe(rank => {

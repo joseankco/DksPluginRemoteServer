@@ -13,13 +13,12 @@ export class ChangeConnectionGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    /*const id = route.paramMap.get('id');
+    const id = route.paramMap.get('id');
     if (id) {
-      this.darkbot.refresh(id);
+      this.darkbot.switch(id);
     } else {
-      this.darkbot.refresh();
+      this.darkbot.switch();
     }
-    */
     return true;
   }
 

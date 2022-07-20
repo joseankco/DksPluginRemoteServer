@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (!this.darkbot.isSingle()) {
         this.data = data as ServerResponse[];
       } else {
-        this.darkbot.disconnect();
+        // this.darkbot.disconnect();
       }
     });
   }
