@@ -6,6 +6,7 @@ export interface ShipModuleModifier {
 }
 
 export interface ShipModule {
+  id: string;
   lootId: number;
   lootDesc: string;
   name: string;
@@ -15,6 +16,7 @@ export interface ShipModule {
 
 export function parseModule(item: HangarItem) {
   return {
+    id: item.id,
     lootId: item.loot_id,
     lootDesc: item.loot_desc,
     name: item.name,

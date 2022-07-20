@@ -52,7 +52,7 @@ export class StatsComponent implements OnInit, OnDestroy {
   }
 
   getItemDiff(item: HangarItem) {
-    return this.hangarData.diff.differences.find(d => d.lootId === item.loot_id)?.diff;
+    return this.hangarData.diff.differences.find(d => d.lootDesc === item.loot_desc)?.diff;
   }
 
   getValues(title: string) {

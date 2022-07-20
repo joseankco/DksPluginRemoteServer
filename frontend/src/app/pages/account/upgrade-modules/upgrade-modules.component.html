@@ -59,6 +59,11 @@
                [(ngModel)]="toggleSPC" type="checkbox" role="switch" id="toggler-spc">
         <label class="form-check-label" for="toggler-spc">SPC</label>
       </div>
+      <div class="form-check form-check-inline form-switch">
+        <input class="form-check-input" [ngClass]="{'bg-dark': toggleNews}"
+               [(ngModel)]="toggleNews" type="checkbox" role="switch" id="toggler-news">
+        <label class="form-check-label" for="toggler-news">Only New</label>
+      </div>
     </div>
   </div>
   <div class="row">
@@ -105,7 +110,10 @@
     <ng-container>
       <tr *ngFor="let module of modules">
         <ng-container *ngIf="checkPassFilter(module)">
-          <th scope="row" class="align-middle" [ngClass]="color">{{module.name.replace(type + '-', '')}}</th>
+          <th scope="row" class="align-middle" [ngClass]="color">
+            {{module.name.replace(type + '-', '')}}
+            <span class="small" *ngIf="isNewModule(module)">|new|</span>
+          </th>
           <td class="align-middle no-wrap">
             <ng-container *ngFor="let modifier of module.modifiers">
               <p class="mb-0" [ngClass]="{'text-danger': modifier.value < 0, 'fw-bold text-info': filterModifier && filterModifier === modifier.desc}">

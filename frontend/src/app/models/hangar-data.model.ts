@@ -1,6 +1,18 @@
+export interface HangarDifference {
+  lootDesc: string;
+  diff: number;
+}
+
+export interface HangarModulesDiff {
+  init: string[];
+  current: string[];
+  diff: string[];
+}
+
 export interface HangarDataDiff {
-  differences: {lootId: number, diff: number}[];
+  differences: HangarDifference[];
   tick: number;
+  modules: HangarModulesDiff;
 }
 
 export interface HangarItem {

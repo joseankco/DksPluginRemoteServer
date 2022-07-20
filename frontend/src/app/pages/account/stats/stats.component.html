@@ -29,7 +29,7 @@
           </tr>
           <tr>
             <th scope="row">
-              <img class="img-fluid img-icon-sm" [src]="rankservice.getRankUrl(rankData.now.current.img)" [alt]="rankData.now.current.img">
+              <img class="img-fluid" [src]="rankservice.getRankUrl(rankData.now.current.img)" [alt]="rankData.now.current.img">
               {{rankData.now.current.name}}
             </th>
             <td class="align-middle">{{rankData.now.current.points | asNumber}}</td>
@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <th scope="row">
-              <img class="img-fluid img-icon-sm" [src]="rankservice.getRankUrl(rankData.now.lower.img)" [alt]="rankData.now.lower.img">
+              <img class="img-fluid" [src]="rankservice.getRankUrl(rankData.now.lower.img)" [alt]="rankData.now.lower.img">
               {{rankData.now.lower.name}}
             </th>
             <td class="align-middle">{{rankData.now.lower.points | asNumber}}</td>
