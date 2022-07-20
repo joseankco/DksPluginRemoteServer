@@ -124,6 +124,9 @@ class ItemDTO(object):
     def is_type_of(self, of: ItemTypes):
         return of.get_str() in self.loot_desc
 
+    def get_id(self):
+        return self.id
+
     def __str__(self):
         base = 'item=[lootID: {}, loot: {}, name={}, quantity={}]'.format(
             self.loot_id, self.loot_desc, self.name, self.quantity
@@ -136,6 +139,8 @@ class ItemDTO(object):
 class HangarItemsDTO(object):
     def __init__(self, items, infos, loots):
         self.items = []
+        self.modules = []
+        self.modules_id = []
         for item in items:
             lootid = item['L']
             for info in infos:
@@ -143,10 +148,19 @@ class HangarItemsDTO(object):
                     itemdto = ItemDTO(item, info, loots[lootid])
                     exists = self.get_item_loot_id(itemdto.loot_id)
                     if exists is None or itemdto.is_ship_module():
+                        if itemdto.is_ship_module():
+                            self.modules_id.append(itemdto.get_id())
+                            self.modules.append(itemdto)
                         self.items.append(itemdto)
                     else:
                         exists.quantity = exists.quantity + 1
                     break
+
+    def get_item_id(self, rid):
+        for item in self.items:
+            if item.id == rid:
+                return item
+        return None
 
     def get_item_loot_id(self, lootid):
         for item in self.items:
@@ -174,6 +188,21 @@ class HangarItemsDTO(object):
                 itms.append(item)
         return itms
 
+    def get_quantity_module(self, loot_desc):
+        total = 0
+        for module in self.modules:
+            if module.loot_desc == loot_desc:
+                total = total + module.quantity
+        return total
+
+    def get_safe_quantity(self, item):
+        if item.is_ship_module():
+            return self.get_quantity_module(item.loot_desc)
+        return item.quantity
+
+    def get_modules_id(self):
+        return self.modules_id
+
     def __str__(self):
         res = 'hangar_items={\n'
         for item in self.items:
@@ -187,17 +216,29 @@ class HangarItemsDiffDTO(object):
         self.tick = round(time() * 1000)
         self.differences = []
         for c_item in current.items:
-            i_item = init.get_item_loot_id(c_item.loot_id)
+            i_item = init.get_item_loot_desc(c_item.loot_desc)
+            c_quantity = current.get_safe_quantity(c_item)
             if i_item is None:
                 self.differences.append({
-                    'lootId': c_item.loot_id,
-                    'diff': c_item.quantity
+                    'lootDesc': c_item.loot_desc,
+                    'diff': c_quantity
                 })
             else:
+                i_quantity = init.get_safe_quantity(i_item)
                 self.differences.append({
-                    'lootId': c_item.loot_id,
-                    'diff': c_item.quantity - i_item.quantity
+                    'lootDesc': c_item.loot_desc,
+                    'diff': c_quantity - i_quantity
                 })
+        self.modules = {
+            'init': init.get_modules_id(),
+            'current': current.get_modules_id(),
+            'diff': list(set(current.get_modules_id()) - set(init.get_modules_id()))
+        }
+
+    def get_quantity(self, items: HangarItemsDTO, item: ItemDTO):
+        if item.is_ship_module():
+            return items.get_quantity_loot_desc(item.loot_desc)
+        return item.quantity
 
 
 class HangarDataTransferDTO(object):
@@ -227,4 +268,3 @@ class HangarUtils(object):
         name = loot.replace(' ', '_').replace('-', '_').replace('.', '').upper()
         name = name.replace('RESOURCE_COLLECTABLE_', '')
         return name.lower()
-

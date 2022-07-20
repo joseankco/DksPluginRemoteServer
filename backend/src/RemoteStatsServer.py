@@ -33,8 +33,10 @@ is_server_hashed = False
 # API Backend
 rank_data_last_tick = {}
 hangar_data_last_tick = {}
-manager_api: ManagerAPI = None
 palladium_api: PalladiumStatsAPI = None
+
+manager_api_hash = {}
+palladium_api_hash = {}
 
 
 def reset_ticks():
@@ -49,8 +51,8 @@ def hash_string_md5(s):
 
 
 def parse_post_data(data):
-    global manager_api
-    global palladium_api
+    global manager_api_hash
+    global palladium_api_hash
     global rank_data_last_tick
     global hangar_data_last_tick
 
@@ -72,13 +74,18 @@ def parse_post_data(data):
         if hangar_data_last_tick.get(accid, None) is None:
             hangar_data_last_tick[accid] = {'tick': 0, 'sent': False}
 
-        manager_api = ManagerSingleton(accid)
-        manager_api.set_sesion(sesion['instance'], sesion['sid'])
-        manager_api.run_thread()
+        manager = manager_api_hash.get(accid, None)
+        if manager is None:
+            manager = ManagerSingleton(accid)
+            manager_api_hash[accid] = manager
+        if not manager.is_thread_alive():
+            manager.run_thread()
+
+        manager.set_sesion(sesion['instance'], sesion['sid'])
         # palladium_api = PalladiumStatsSingleton(accid)
 
-        rank_data = manager_api.backpage.get_data()
-        hangar_data = manager_api.hangar.get_data()
+        rank_data = manager.backpage.get_data()
+        hangar_data = manager.hangar.get_data()
         # data['charts'] = {}
         # if palladium_api.add_data(data['plugin']['palladiumStats']):
             # data['charts']['palladiumStats'] = palladium_api.get_data()
@@ -174,14 +181,14 @@ def get_single_data(accid):
             if rank_data_last_tick[accid]['sent']:
                 del data['rankData']
             else:
-                print('sent rank data', rank_data_last_tick[accid]['tick'], accid)
+                # print('sent rank data', rank_data_last_tick[accid]['tick'], accid)
                 rank_data_last_tick[accid]['sent'] = True
 
         if 'hangarData' in data.keys():
             if hangar_data_last_tick[accid]['sent']:
                 del data['hangarData']
             else:
-                print('sent hangar data:', hangar_data_last_tick[accid]['tick'], accid)
+                # print('sent hangar data:', hangar_data_last_tick[accid]['tick'], accid)
                 hangar_data_last_tick[accid]['sent'] = True
 
         if tick == -1 or data['tick'] != tick:
