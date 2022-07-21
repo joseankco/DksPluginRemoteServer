@@ -1,3 +1,12 @@
+export interface Booster {
+  amount: number;
+  name: string;
+  small: string;
+  color: string;
+  category: string;
+  remainingTime: number;
+}
+
 export interface Target {
   isValid: boolean;
   isEnemy: boolean;
@@ -28,4 +37,5 @@ export interface Hero {
   hullPercent: number;
   username: string;
   target: Target;
+  boosters: Booster[];
 }

@@ -6,6 +6,8 @@ from time import sleep
 import requests
 import base64
 
+from requests import Timeout
+
 from RankTypes import RankDataTransferDTO, RankUtils, RankDataDiffDTO, RankDataDTO
 from HangarTypes import HangarListDTO, HangarItemsDTO, HangarItemsDiffDTO, HangarDataTransferDTO, ItemTypes
 
@@ -62,6 +64,7 @@ class ManagerAPI(object):
 
     def run(self):
         while True:
+            sleep(1)
             self.backpage.refresh_data()
             sleep(2)
             self.hangar.refresh_data()
@@ -151,12 +154,17 @@ class HangarAPI(ManagerAbstract):
             return False
 
         url = self.get_url_action(HangarActions.HANGAR_LIST)
-        r = requests.get(
-            url=url,
-            headers=self.get_headers(),
-            cookies=self.get_cookies(),
-            timeout=2500
-        )
+        try:
+            r = requests.get(
+                url=url,
+                headers=self.get_headers(),
+                cookies=self.get_cookies(),
+                timeout=5000
+            )
+        except BaseException:
+            print('Exception Refreshing HangarList', self.aid)
+            return False
+
         data_decoded = base64.b64decode(r.text)
         data = json.loads(data_decoded)
         if data['isError'] == 0:
@@ -170,12 +178,17 @@ class HangarAPI(ManagerAbstract):
 
         active = self.hangar_list.get_active_hangar()
         url = self.get_url_action(HangarActions.HANGAR_ITEMS) + active.get_encoded_params()
-        r = requests.get(
-            url=url,
-            headers=self.get_headers(),
-            cookies=self.get_cookies(),
-            timeout=2500
-        )
+        try:
+            r = requests.get(
+                url=url,
+                headers=self.get_headers(),
+                cookies=self.get_cookies(),
+                timeout=5000
+            )
+        except BaseException:
+            print('Exception Refreshing HangarItems', self.aid)
+            return False
+
         data_decoded = base64.b64decode(r.text)
         data = json.loads(data_decoded)
         if data['isError'] == 0:
@@ -306,12 +319,17 @@ class BackPageAPI(ManagerAbstract):
             return False
 
         url = self.get_url_action(BackPageActions.DAILY_RANK)
-        r = requests.get(
-            url=url,
-            headers=self.get_headers(),
-            cookies=self.get_cookies(),
-            timeout=2500
-        )
+
+        try:
+            r = requests.get(
+                url=url,
+                headers=self.get_headers(),
+                cookies=self.get_cookies(),
+                timeout=5000
+            )
+        except BaseException:
+            print('Exception Refreshing DailyRank', self.aid)
+            return False
 
         now_rank_data: RankDataDTO = RankUtils.parse_daily_rank(r)
         if now_rank_data is not None:

@@ -13,6 +13,8 @@ import {DarkBotService} from "../../services/dark-bot.service";
 import {BotMap} from "../../models/bot-map.model";
 import {ServerResponse} from "../../models/main.model";
 import {MinimapService} from "../../services/minimap.service";
+import {Booster} from "../../models/hero.model";
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'app-bot-map',
@@ -149,5 +151,12 @@ export class BotMapComponent implements OnInit, OnChanges {
 
   getTargetColor() {
     return this.data.hero.target.isEnemy ? this.colors.enemies : this.colors.allies;
+  }
+
+  getBoosterTime(booster: Booster) {
+    if (booster.remainingTime > 0) {
+      return new DatePipe('en-US').transform((booster.remainingTime * 1000) - (60 * 60 * 1000), 'HH:mm');
+    }
+    return '∞';
   }
 }

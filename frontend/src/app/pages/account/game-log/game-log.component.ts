@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ServerResponse} from "../../../models/main.model";
 import {Subscription} from "rxjs";
 import {DarkBotService} from "../../../services/dark-bot.service";
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'app-game-log',
@@ -35,5 +36,17 @@ export class GameLogComponent implements OnInit, OnDestroy {
       ll += l + '\n';
     });
     return ll;
+  }
+
+  getDeaths() {
+    let l = '';
+    l += this.data.deaths.numDeaths + '\n'
+    if (this.data.deaths.numDeaths > 0) {
+      l += 'Last kill by ';
+      l += this.data.deaths.lastDestroyerName + ' ';
+      l += 'at ';
+      l += (new DatePipe('en-US')).transform(this.data.deaths.lastDeathMilliseconds, 'HH:mm:ss') + '\n'
+    }
+    return l;
   }
 }

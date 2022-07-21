@@ -13,7 +13,7 @@
           <div class="col-10 text-start ps-3 pe-0 my-auto no-wrap">
             {{data.module.status}}
           </div>
-          <div class="col-2 text-end ps-0 pe-3 my-auto no-wrap">
+          <div class="col-2 text-end ps-0 pe-3 my-auto no-wrap" *ngIf="darkbot.isSingle()">
             {{data.stats.ping}}ms
           </div>
         </div>
@@ -34,6 +34,18 @@
             <p class="very-small mb-0">exp/h {{ data.stats.earnedExperience | perHour: data.stats.runningTimeSeconds }}</p>
             <p class="very-small mb-0">hon/h {{ data.stats.earnedHonor | perHour: data.stats.runningTimeSeconds }}</p>
             <p class="very-small mb-0">cargo {{ data.stats.cargo }}/{{ data.stats.maxCargo }}</p>
+            <p class="very-small mb-0">death {{ data.deaths.numDeaths }}</p>
+          </div>
+        </div>
+        <div class="overlay font-monospace">
+          <div class="row">
+            <div class="col boosters text-end fw-bold ps-0 pe-3">
+              <ng-container *ngFor="let booster of data.hero.boosters">
+                <p class="very-small mb-0" [ngStyle]="{'color': booster.color}" *ngIf="booster.amount !== 0">
+                  {{ booster.remainingTime * 1000 | millisecondsAsDHM }} {{booster.amount}}% {{booster.small}}
+                </p>
+              </ng-container>
+            </div>
           </div>
         </div>
       </div>

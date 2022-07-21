@@ -23,6 +23,10 @@
   top: 35px;
 }
 
+.boosters {
+  padding-top: 35px;
+}
+
 .hero-info {
   position:absolute;
   bottom: 15px;
@@ -41,6 +45,6 @@
 
 .view-button {
   position:absolute;
-  top: 25px;
+  top: 0px;
   right: 5px;
 }

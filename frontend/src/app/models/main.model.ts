@@ -5,6 +5,7 @@ import {BotModule} from "./bot-module.model";
 import {BotPlugin} from "./bot-plugin.model";
 import {RankData} from "./rank-data.model";
 import {HangarData} from "./hangar-data.model";
+import {Deaths} from "./deaths.model";
 
 export interface ServerResponse {
   hero: Hero;
@@ -16,4 +17,5 @@ export interface ServerResponse {
   hashed: boolean;
   rankData?: RankData;
   hangarData?: HangarData;
+  deaths: Deaths;
 }

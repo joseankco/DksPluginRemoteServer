@@ -39,6 +39,7 @@ export class DarkBotService {
   }
 
   public disconnect() {
+    console.log('Disconnect trigger')
     return this.websocket.close();
   }
 
@@ -100,6 +101,8 @@ export class DarkBotService {
         this.isGettingArray = false;
         this.lastData = data;
         this.data$.next(data);
+        // this.rankData$.next(undefined);
+        // this.hangarData$.next(undefined);
       }
     }
   }

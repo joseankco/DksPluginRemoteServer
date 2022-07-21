@@ -43,10 +43,25 @@ account_id = None
 def reset_ticks():
     global rank_data_last_tick
     global hangar_data_last_tick
-    global account_id
     rank_data_last_tick = {}
     hangar_data_last_tick = {}
+
+
+def fill_ticks_if_empty(accid, tick):
+    if rank_data_last_tick.get(accid, None) is None:
+        rank_data_last_tick[accid] = {'tick': tick, 'sent': False}
+    if hangar_data_last_tick.get(accid, None) is None:
+        hangar_data_last_tick[accid] = {'tick': tick, 'sent': False}
+
+
+def reset_acc_id():
+    global account_id
     account_id = None
+
+
+def mark_all_unsent():
+    for key, value in rank_data_last_tick.items():
+        value['sent'] = False
 
 
 def hash_string_md5(s):
@@ -72,10 +87,7 @@ def parse_post_data(data):
             data['hero']['id'] = accid
             data['hero']['username'] = hash_string_md5(data['hero']['username'])
 
-        if rank_data_last_tick.get(accid, None) is None:
-            rank_data_last_tick[accid] = {'tick': 0, 'sent': False}
-        if hangar_data_last_tick.get(accid, None) is None:
-            hangar_data_last_tick[accid] = {'tick': 0, 'sent': False}
+        fill_ticks_if_empty(accid, 0)
 
         manager = manager_api_hash.get(accid, None)
         if manager is None:
@@ -180,9 +192,11 @@ def get_single_data(accid):
         data = server_data_hash.get(accid)
         tick = server_ticks_hash.get(accid, -1)
 
+        # print(data.keys())
         if 'rankData' in data.keys():
             if rank_data_last_tick[accid]['sent']:
                 del data['rankData']
+                # print('del rank data', rank_data_last_tick[accid]['tick'], accid)
             else:
                 # print('sent rank data', rank_data_last_tick[accid]['tick'], accid)
                 rank_data_last_tick[accid]['sent'] = True
@@ -190,6 +204,7 @@ def get_single_data(accid):
         if 'hangarData' in data.keys():
             if hangar_data_last_tick[accid]['sent']:
                 del data['hangarData']
+                # print('del hangar data:', hangar_data_last_tick[accid]['tick'], accid)
             else:
                 # print('sent hangar data:', hangar_data_last_tick[accid]['tick'], accid)
                 hangar_data_last_tick[accid]['sent'] = True
@@ -206,8 +221,11 @@ def process_input_message(command: str):
     if command is not None:
         if command.startswith('switch'):
             account_id = command.split(':')[1]
+            reset_ticks()
+            fill_ticks_if_empty(account_id, round(time.time() * 1000))
         elif command == 'multiple':
             account_id = None
+        # mark_all_unsent()
 
 
 @sock.route('/stream')
@@ -229,6 +247,7 @@ def echo(ws):
             time.sleep(1)
     except BaseException as e:
         reset_ticks()
+        reset_acc_id()
 
 
 def main():

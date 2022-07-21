@@ -80,6 +80,6 @@ class RankUtils(object):
             current = RankDTO(current_name, daily_points.getText(), current_img)
 
             return RankDataDTO(upper, current, lower)
-        except Exception as e:
+        except BaseException as e:
             print('Exception Parse_Daily_Rank', str(e))
             return None

@@ -20,6 +20,7 @@ import { StatsComponent } from './pages/account/stats/stats.component';
 import { TickAsTimePipe } from './pipes/tick-as-time.pipe';
 import { UpgradeModulesComponent } from './pages/account/upgrade-modules/upgrade-modules.component';
 import {FormsModule} from "@angular/forms";
+import { MillisecondsAsDHMPipe } from './pipes/milliseconds-as-dhm.pipe';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import {FormsModule} from "@angular/forms";
     PerHourPipe,
     StatsComponent,
     TickAsTimePipe,
-    UpgradeModulesComponent
+    UpgradeModulesComponent,
+    MillisecondsAsDHMPipe
   ],
     imports: [
         BrowserModule,
