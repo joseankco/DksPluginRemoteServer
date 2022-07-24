@@ -121,3 +121,7 @@ a[aria-expanded="false"] img {
 a[aria-expanded="true"] img {
   content: url("assets/visibility-off.png");
 }
+
+.wrapper {
+  position: relative;
+}

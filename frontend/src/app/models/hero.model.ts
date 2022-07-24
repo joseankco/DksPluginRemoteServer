@@ -21,6 +21,12 @@ export interface Target {
   shieldPercent: number;
 }
 
+export interface Destination {
+  hasDestination: boolean;
+  x: number;
+  y: number;
+}
+
 export interface Hero {
   id: string;
   x: number;
@@ -38,4 +44,5 @@ export interface Hero {
   username: string;
   target: Target;
   boosters: Booster[];
+  destination: Destination;
 }

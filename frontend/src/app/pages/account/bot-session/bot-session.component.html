@@ -1,4 +1,51 @@
 <ng-container *ngIf="data">
+  <div class="row" *ngIf="botConfig && darkbot.isConnected()">
+    <div class="col-12 col-md">
+      <div class="wrapper">
+        <select class="form-control" [(ngModel)]="currentProfile" (ngModelChange)="setNewProfile()">
+          <option [ngValue]="undefined" hidden>
+            Change profile...
+          </option>
+          <ng-container *ngFor="let profile of botConfig.profileOptions">
+            <option [ngValue]="profile" [disabled]="profile === data.config.selectedProfile">
+              {{profile}}
+            </option>
+          </ng-container>
+        </select>
+        <mat-spinner [diameter]="30" class="spinner-overlay" color="accent" *ngIf="isChangingProfile"></mat-spinner>
+      </div>
+    </div>
+    <div class="col-12 col-md mt-2 mt-md-auto">
+      <div class="wrapper">
+        <select class="form-control" [(ngModel)]="currentModuleId" (ngModelChange)="setNewModule()">
+          <option [ngValue]="undefined" hidden>
+            Change module...
+          </option>
+          <ng-container *ngFor="let module of botConfig.moduleOptions">
+            <option [ngValue]="module.value" [disabled]="module.value === data.config.selectedModuleId">
+              {{module.name}}
+            </option>
+          </ng-container>
+        </select>
+        <mat-spinner [diameter]="30" class="spinner-overlay" color="accent" *ngIf="isChangingModule"></mat-spinner>
+      </div>
+    </div>
+    <div class="col-12 col-md mt-2 mt-md-auto">
+      <div class="wrapper">
+        <select class="form-control" [(ngModel)]="currentMapId" (ngModelChange)="setNewMap()">
+          <option [ngValue]="undefined" hidden>
+            Change map...
+          </option>
+          <ng-container *ngFor="let map of botConfig.mapOptions">
+            <option [ngValue]="map.value" [disabled]="map.value === data.config.selectedMapId">
+              {{map.name}}
+            </option>
+          </ng-container>
+        </select>
+        <mat-spinner [diameter]="30" class="spinner-overlay" color="accent" *ngIf="isChangingMap"></mat-spinner>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-12 col-lg-8 mt-2">
       <app-bot-map [data]="data"></app-bot-map>

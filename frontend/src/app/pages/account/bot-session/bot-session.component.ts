@@ -1,39 +1,60 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ServerResponse} from "../../../models/main.model";
 import {Subscription} from "rxjs";
 import {DarkBotService} from "../../../services/dark-bot.service";
-import {RankData} from "../../../models/rank-data.model";
 import {RankService} from "../../../services/rank.service";
+import {BotConfig} from "../../../models/bot-config.model";
 
 @Component({
   selector: 'app-bot-session',
   templateUrl: './bot-session.component.html',
-  styleUrls: ['./bot-session.component.css']
+  styleUrls: ['./bot-session.component.css'],
 })
 export class BotSessionComponent implements OnInit {
 
   data!: ServerResponse;
-  rankData!: RankData;
   subscription$: Subscription[] = [];
+  botConfig: BotConfig | undefined;
+  currentModuleId: string | undefined;
+  currentMapId: number | undefined;
+  currentProfile: string | undefined;
+  isChangingModule: boolean = false;
+  isChangingMap: boolean = false;
+  isChangingProfile: boolean = false;
 
   constructor(
-    public darkbot: DarkBotService,
-    public rankservice: RankService
+    public darkbot: DarkBotService
   ) { }
 
   ngOnInit(): void {
     const sub = this.darkbot.getData().subscribe(data => {
       if (this.darkbot.isSingle()) {
         this.data = data as ServerResponse;
+        this.botConfig = this.data.config;
+        if (this.currentModuleId) {
+          const rcurrent = this.data.config.selectedModuleId;
+          if (this.currentModuleId === rcurrent) {
+            this.isChangingModule = false;
+            this.currentModuleId = undefined;
+          }
+        }
+        if (this.currentMapId) {
+          const rcurrent = this.data.config.selectedMapId;
+          if (this.currentMapId === rcurrent) {
+            this.isChangingMap = false;
+            this.currentMapId = undefined;
+          }
+        }
+        if (this.currentProfile) {
+          const rcurrent = this.data.config.selectedProfile;
+          if (this.currentProfile === rcurrent) {
+            this.isChangingProfile = false;
+            this.currentProfile = undefined;
+          }
+        }
       }
     });
-    const sub2 = this.darkbot.getRankData().subscribe(rank => {
-      if (rank) {
-        this.rankData = rank;
-      }
-    })
     this.subscription$.push(sub);
-    this.subscription$.push(sub2);
   }
 
   ngOnDestroy() {
@@ -78,5 +99,23 @@ export class BotSessionComponent implements OnInit {
       pl += p.name + '\n';
     });
     return pl;
+  }
+
+  setNewModule() {
+    if (this.darkbot.action('module:' + this.currentModuleId)) {
+      this.isChangingModule = true;
+    }
+  }
+
+  setNewMap() {
+    if (this.darkbot.action('map:' + this.currentMapId)) {
+      this.isChangingMap = true;
+    }
+  }
+
+  setNewProfile() {
+    if (this.darkbot.action('profile:' + this.currentProfile)) {
+      this.isChangingProfile = true;
+    }
   }
 }

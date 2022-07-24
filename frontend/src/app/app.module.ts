@@ -21,6 +21,8 @@ import { TickAsTimePipe } from './pipes/tick-as-time.pipe';
 import { UpgradeModulesComponent } from './pages/account/upgrade-modules/upgrade-modules.component';
 import {FormsModule} from "@angular/forms";
 import { MillisecondsAsDHMPipe } from './pipes/milliseconds-as-dhm.pipe';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -46,7 +48,9 @@ import { MillisecondsAsDHMPipe } from './pipes/milliseconds-as-dhm.pipe';
         BrowserModule,
         AppRoutingModule,
         HttpClientModule,
-        FormsModule
+        FormsModule,
+        BrowserAnimationsModule,
+        MatProgressSpinnerModule
     ],
   providers: [],
   bootstrap: [AppComponent]

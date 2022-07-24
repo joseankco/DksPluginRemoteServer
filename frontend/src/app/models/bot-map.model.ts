@@ -17,6 +17,7 @@ export interface Player {
 }
 
 export interface BotMap {
+  id: number;
   boundX: number;
   boundY: number;
   name: string;

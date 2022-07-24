@@ -6,6 +6,7 @@ import {BotPlugin} from "./bot-plugin.model";
 import {RankData} from "./rank-data.model";
 import {HangarData} from "./hangar-data.model";
 import {Deaths} from "./deaths.model";
+import {BotConfig} from "./bot-config.model";
 
 export interface ServerResponse {
   hero: Hero;
@@ -18,4 +19,5 @@ export interface ServerResponse {
   rankData?: RankData;
   hangarData?: HangarData;
   deaths: Deaths;
+  config: BotConfig;
 }

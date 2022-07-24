@@ -59,10 +59,16 @@ class HangarShipDTO(object):
 
 
 class HangarListDTO(object):
-    def __init__(self, hangars):
+    def __init__(self, hangarsjson):
         self.hangars = []
-        for i in hangars.keys():
-            self.hangars.append(HangarShipDTO(hangars[str(i)]))
+        if type(hangarsjson) is dict:
+            for i in hangarsjson.keys():
+                self.hangars.append(HangarShipDTO(hangarsjson[str(i)]))
+        elif type(hangarsjson) is list:
+            for hangar in hangarsjson:
+                self.hangars.append(HangarShipDTO(hangar))
+        else:
+            raise 'Unknown API HangarList'
 
     def get_active_hangar(self):
         for hangar in self.hangars:

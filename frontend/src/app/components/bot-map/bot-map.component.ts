@@ -36,7 +36,8 @@ export class BotMapComponent implements OnInit, OnChanges {
     allies: '#1dd7ee',
     enemies: '#ff1818',
     npcs: '#c90d0d',
-    hero: '#48ed00'
+    hero: '#48ed00',
+    movement: '#8ebaff',
   }
 
   @ViewChild('map', {static: true}) map!: ElementRef<HTMLCanvasElement>;
@@ -140,6 +141,15 @@ export class BotMapComponent implements OnInit, OnChanges {
         this.data.map.players.forEach((player) => {
           this.drawCircleFill(player.x, player.y, context, canvas, player.isEnemy ? this.colors.enemies : this.colors.allies, this.shipRatioSize);
         });
+        if (this.data.hero.destination.hasDestination) {
+          this.drawCircleFill(this.data.hero.destination.x, this.data.hero.destination.y, context, canvas, this.colors.movement, this.shipRatioSize * 1.5);
+          context.beginPath();
+          context.moveTo(this.transformX(this.data.hero.x), this.transformY(this.data.hero.y));
+          context.lineTo(this.transformX(this.data.hero.destination.x), this.transformY(this.data.hero.destination.y));
+          context.lineWidth = ((canvas.width + canvas.height) / (this.shipRatioSize * 2));
+          context.strokeStyle = this.colors.movement;
+          context.stroke();
+        }
         this.drawCircleFill(this.data.hero.x, this.data.hero.y, context, canvas, this.colors.hero, this.playerRatioSize);
       }
     }

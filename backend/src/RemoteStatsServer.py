@@ -1,7 +1,7 @@
 import time
 import hashlib
 from colorama import Fore
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from flask_sock import Sock
 import sys
 import os
@@ -38,6 +38,27 @@ palladium_api: PalladiumStatsAPI = None
 manager_api_hash = {}
 palladium_api_hash = {}
 account_id = None
+server_response = {}
+
+
+def set_server_response(action, aid, parameter=''):
+    global server_response
+    global app
+
+    if aid is None:
+        aid = 'all'
+
+    if parameter is None:
+        parameter = ''
+
+    with app.app_context():
+        server_response = jsonify({
+            'action': action,
+            'id': aid,
+            'tick': round(time.time() * 1000),
+            'parameter': parameter
+        })
+        server_response.status_code = 200
 
 
 def reset_ticks():
@@ -127,8 +148,9 @@ def parse_data_to_json(data):
 def result():
     global server_data_hash
     global is_server_hashed
+    global server_response
     parse_post_data(request.get_json())
-    return '200'
+    return server_response
 
 
 @app.route('/', methods=['GET'])
@@ -225,7 +247,11 @@ def process_input_message(command: str):
             fill_ticks_if_empty(account_id, round(time.time() * 1000))
         elif command == 'multiple':
             account_id = None
-        # mark_all_unsent()
+        elif command.startswith('action'):
+            spl = command.split(':')
+            action = spl[1]
+            parameters = spl[2]
+            set_server_response(action, account_id, parameters)
 
 
 @sock.route('/stream')
@@ -248,6 +274,7 @@ def echo(ws):
     except BaseException as e:
         reset_ticks()
         reset_acc_id()
+        set_server_response('none', 'all')
 
 
 def main():
@@ -260,6 +287,7 @@ def main():
 
 if __name__ == '__main__':
     try:
+        set_server_response('none', 'all')
         main()
     except SystemExit:
         pass

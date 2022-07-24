@@ -55,6 +55,16 @@ export class DarkBotService {
     }
   }
 
+  public action(action: string) {
+    if (this.isConnected()) {
+      const finalaction = 'action:' + action;
+      console.log('Sent action: ', finalaction)
+      this.websocket.send(finalaction);
+      return true;
+    }
+    return false;
+  }
+
   private onopen() {
     console.log('Connection Succesfully');
     this.error = undefined;
