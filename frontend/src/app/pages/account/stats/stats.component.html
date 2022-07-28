@@ -107,7 +107,7 @@
 </ng-container>
 
 <ng-template #itemGroup let-title='title' let-items='items'>
-  <div class="row mb-3" *ngIf="getValues(title) as v">
+  <div class="row mb-3">
     <div class="col">
       <a class="col-form-label fw-bold link-unstyled cursor-pointer" #anchor
          data-bs-toggle="collapse" [attr.data-bs-target]="'#' + title.replace(' ', '-')"

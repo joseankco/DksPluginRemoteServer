@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {ServerResponse} from "../../../models/main.model";
 import {Subscription} from "rxjs";
 import {DarkBotService} from "../../../services/dark-bot.service";
-import {RankService} from "../../../services/rank.service";
 import {BotConfig} from "../../../models/bot-config.model";
 
 @Component({
