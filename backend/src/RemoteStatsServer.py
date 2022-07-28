@@ -8,6 +8,7 @@ import os
 import json
 from FlaskServerApp import FlaskServerApp
 import logging
+from flask_cors import CORS
 
 # API Backend
 from Manager import ManagerSingleton, ManagerAPI
@@ -23,7 +24,9 @@ if getattr(sys, 'frozen', False):
 else:
     app = Flask(__name__)
 
+CORS(app)
 sock = Sock(app)
+
 server_data_hash = {}
 server_ticks_hash = {}
 server_fails_hash = {}
@@ -142,6 +145,23 @@ def parse_post_data(data):
 
 def parse_data_to_json(data):
     return json.dumps(data, default=lambda x: x.__dict__)
+
+
+@app.route('/set-account', methods=['POST'])
+def set_account():
+    global account_id
+    data = request.get_json()
+    accid = data['id']
+    if accid != '':
+        account_id = accid
+        reset_ticks()
+        fill_ticks_if_empty(account_id, round(time.time() * 1000))
+    else:
+        account_id = None
+
+    response = jsonify()
+    response.status_code = 200
+    return response
 
 
 @app.route('/', methods=['POST'])

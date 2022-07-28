@@ -90,6 +90,7 @@ class ItemDTO(object):
             self.name = HangarUtils.sanitize_name(self.loot_desc)
         else:
             self.name = info['name']
+        self.name = HangarUtils.translate_name(self.name, self.loot_desc)
         self.level = item['LV']
         if 'properties' in itemkeys:
             self.properties = item['properties']
@@ -273,4 +274,41 @@ class HangarUtils(object):
     def sanitize_name(loot):
         name = loot.replace(' ', '_').replace('-', '_').replace('.', '').upper()
         name = name.replace('RESOURCE_COLLECTABLE_', '')
+        name = name.replace('_', ' ')
         return name.lower()
+
+    @staticmethod
+    def translate_name(name, desc):
+        if 'equipment_weapon_laser_' in desc:
+            nname = desc.replace('equipment_weapon_laser_', '').upper()
+            if nname == 'PR-L':
+                return 'PROMETHEUS'
+            return nname
+        elif 'drone_formation_' in desc:
+            formation = desc.replace('drone_formation_', '').upper()
+            switcher = {
+                'F-01-TU': 'Formation Turtle',
+                'F-02-AR': 'Formation Arrow',
+                'F-03-LA': 'Formation Lance',
+                'F-04-ST': 'Formation Star',
+                'F-05-PI': 'Formation Pincer',
+                'F-06-DA': 'Formation Double-Arrow',
+                'F-07-DI': 'Formation Diamond',
+                'F-08-CH': 'Formation Chevron',
+                'F-09-MO': 'Formation Moth',
+                'F-10-CR': 'Formation Crab',
+                'F-11-HE': 'Formation Heart',
+                'F-12-BA': 'Formation Barrage',
+                'F-13-BT': 'Formation Bat',
+                'F-3D-DR': 'Formation Drill',
+                'F-3D-VT': 'Formation Veteran',
+                'F-3D-WL': 'Formation Wheel',
+                'F-3D-RG': 'Formation Ring',
+                'F-3D-DM': 'Formation Dome',
+                'F-3D-WV': 'Formation Wavy',
+                'F-3D-X': 'Formation X'
+            }
+            return switcher.get(formation, name)
+        elif 'drone_designs_' in desc:
+            return 'design ' + name
+        return name

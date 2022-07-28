@@ -70,7 +70,7 @@ class Version(object):
                 print(self.update_url)
                 webbrowser.open(self.update_url, new=2)
             if key.lower() != 'imadevxd':
-                exit(0)
+                sys.exit(0)
 
     def __str__(self):
         return Fore.GREEN + \
