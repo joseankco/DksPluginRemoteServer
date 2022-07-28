@@ -1,9 +1,10 @@
 import {Injectable, isDevMode} from '@angular/core';
-import {ReplaySubject} from "rxjs";
+import {firstValueFrom, map, ReplaySubject} from "rxjs";
 import {ServerResponse} from "../models/main.model";
 import {RankData} from "../models/rank-data.model";
 import {HangarData} from "../models/hangar-data.model";
 import WebSocketAsPromised from 'websocket-as-promised';
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class DarkBotService {
 
   private isGettingArray: boolean = true;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.websocket = new WebSocketAsPromised(this.getFullUrl());
     this.websocket.onClose.addListener(this.onclose.bind(this));
     this.websocket.onError.addListener(this.onerror.bind(this));
@@ -32,10 +33,19 @@ export class DarkBotService {
   }
 
   public connect(id: string = '') {
+    /*
     if (id) {
       return this.websocket.open().then(() => this.websocket.send('switch:' + id))
     }
     return this.websocket.open().then(() => this.websocket.send('multiple'))
+    */
+    return firstValueFrom(this.setAccount(id)).then((r) => {
+      return this.websocket.open();
+    });
+  }
+
+  public setAccount(id: string = '') {
+    return this.http.post(this.getUrlBackend() + '/set-account', {id: id});
   }
 
   public disconnect() {
@@ -92,13 +102,16 @@ export class DarkBotService {
     if (this.isGettingArray) {
       this.lastReceived = new Date();
     } else {
-      if ((this.lastData as ServerResponse).rankData) {
-        this.rankData$.next((this.lastData as ServerResponse).rankData)
+      let data = (this.lastData as ServerResponse);
+      if (data.rankData) {
+        data.rankData.id = data.hero.id;
+        this.rankData$.next(data.rankData);
       }
-      if ((this.lastData as ServerResponse).hangarData) {
-        this.hangarData$.next((this.lastData as ServerResponse).hangarData)
+      if (data.hangarData) {
+        data.hangarData.id = data.hero.id;
+        this.hangarData$.next(data.hangarData)
       }
-      this.lastReceived = new Date((this.lastData as ServerResponse).tick);
+      this.lastReceived = new Date(data.tick);
     }
     this.error = undefined;
     console.log(JSON.parse(m))
@@ -186,6 +199,14 @@ export class DarkBotService {
         .replace('https://', 'wss://')
     } else {
       return 'ws://localhost:8085';
+    }
+  }
+
+  public getUrlBackend() {
+    if (!isDevMode()) {
+      return window.location.origin;
+    } else {
+      return 'http://localhost:8085';
     }
   }
 

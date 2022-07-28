@@ -118,4 +118,8 @@ export class BotSessionComponent implements OnInit {
       this.isChangingProfile = true;
     }
   }
+
+  resetBotStats() {
+    this.darkbot.action('reset_bot_stats:none')
+  }
 }

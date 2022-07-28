@@ -43,6 +43,7 @@ export interface HangarItemGroups {
 }
 
 export interface HangarData {
+  id?: string;
   diff: HangarDataDiff;
   items: HangarItemGroups;
 }

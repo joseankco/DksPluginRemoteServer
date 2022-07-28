@@ -18,6 +18,7 @@ export interface RankValues {
 }
 
 export interface RankData {
+  id?: string;
   diff: RankDataDiff;
   init: RankValues;
   now: RankValues;

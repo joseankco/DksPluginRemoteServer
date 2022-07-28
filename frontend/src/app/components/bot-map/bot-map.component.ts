@@ -10,7 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {DarkBotService} from "../../services/dark-bot.service";
-import {BotMap} from "../../models/bot-map.model";
+import {Barrier, BotMap} from "../../models/bot-map.model";
 import {ServerResponse} from "../../models/main.model";
 import {MinimapService} from "../../services/minimap.service";
 import {Booster} from "../../models/hero.model";
@@ -38,6 +38,10 @@ export class BotMapComponent implements OnInit, OnChanges {
     npcs: '#c90d0d',
     hero: '#48ed00',
     movement: '#8ebaff',
+    pet: {
+      inner: '#ff7100',
+      outter: '#4b53ff'
+    }
   }
 
   @ViewChild('map', {static: true}) map!: ElementRef<HTMLCanvasElement>;
@@ -125,6 +129,11 @@ export class BotMapComponent implements OnInit, OnChanges {
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
   }
 
+  private drawBarrier(barrier: Barrier, context: CanvasRenderingContext2D) {
+    context.fillStyle = 'rgba(225, 225, 225, 0.3)';
+    context.fillRect(this.transformX(barrier.x1), this.transformY(barrier.y1),this.transformX(barrier.x2) - this.transformX(barrier.x1),this.transformY(barrier.y2) - this.transformY(barrier.y1));
+  }
+
   private renderMap() {
     if (this.map) {
       const canvas = this.map.nativeElement;
@@ -141,6 +150,9 @@ export class BotMapComponent implements OnInit, OnChanges {
         this.data.map.players.forEach((player) => {
           this.drawCircleFill(player.x, player.y, context, canvas, player.isEnemy ? this.colors.enemies : this.colors.allies, this.shipRatioSize);
         });
+        this.data.map.barriers.forEach((barrier) => {
+          this.drawBarrier(barrier, context);
+        });
         if (this.data.hero.destination.hasDestination) {
           this.drawCircleFill(this.data.hero.destination.x, this.data.hero.destination.y, context, canvas, this.colors.movement, this.shipRatioSize * 1.5);
           context.beginPath();
@@ -151,22 +163,19 @@ export class BotMapComponent implements OnInit, OnChanges {
           context.stroke();
         }
         this.drawCircleFill(this.data.hero.x, this.data.hero.y, context, canvas, this.colors.hero, this.playerRatioSize);
+        if (this.data.hero.pet.isActive) {
+          this.drawCircleFill(this.data.hero.pet.x, this.data.hero.pet.y, context, canvas, this.colors.pet.outter, this.playerRatioSize * 1.2);
+          this.drawCircleFill(this.data.hero.pet.x, this.data.hero.pet.y, context, canvas, this.colors.pet.inner, this.playerRatioSize * 1.8);
+        }
       }
     }
-  }
-
-  getPerHour(num: number) {
-    return Math.round(num / (this.data.stats.runningTimeSeconds / 3600))
   }
 
   getTargetColor() {
     return this.data.hero.target.isEnemy ? this.colors.enemies : this.colors.allies;
   }
 
-  getBoosterTime(booster: Booster) {
-    if (booster.remainingTime > 0) {
-      return new DatePipe('en-US').transform((booster.remainingTime * 1000) - (60 * 60 * 1000), 'HH:mm');
-    }
-    return '∞';
+  getSelectedMap() {
+    return this.data.config.mapOptions.find(m => m.value === this.data.config.selectedMapId)?.name;
   }
 }

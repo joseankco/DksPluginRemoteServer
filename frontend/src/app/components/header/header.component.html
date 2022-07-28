@@ -23,13 +23,13 @@
               <li class="nav-item">
                 <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/stats">Stats</a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item" *ngIf="single.plugin.liveLogs">
                 <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/logs">Log</a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item" *ngIf="single.plugin.logScrapper">
                 <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/scrapper">Scrapper</a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item" *ngIf="single.plugin.palladiumStats">
                 <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/palladium">Palladium</a>
               </li>
               <li class="nav-item">

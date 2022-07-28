@@ -23,6 +23,7 @@ import {FormsModule} from "@angular/forms";
 import { MillisecondsAsDHMPipe } from './pipes/milliseconds-as-dhm.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { SpecialTitleCasePipe } from './pipes/special-title-case.pipe';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     StatsComponent,
     TickAsTimePipe,
     UpgradeModulesComponent,
-    MillisecondsAsDHMPipe
+    MillisecondsAsDHMPipe,
+    SpecialTitleCasePipe
   ],
     imports: [
         BrowserModule,

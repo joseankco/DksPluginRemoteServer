@@ -51,7 +51,7 @@
 </ng-container>
 
 <ng-container *ngIf="hangarData">
-  <div class="row">
+  <div class="row mt-3">
     <div class="col">
       <div class="row">
         <div class="col text-start">
@@ -76,6 +76,23 @@
       <ng-container
         [ngTemplateOutlet]="itemGroup"
         [ngTemplateOutletContext]="{title: 'rocket ammo', items: hangarData.items.ammo_rockets}">
+      </ng-container>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col">
+      <div class="row">
+        <div class="col text-start">
+          <label class="fw-bold h5">Equipment</label>
+        </div>
+      </div>
+      <ng-container
+        [ngTemplateOutlet]="itemGroup"
+        [ngTemplateOutletContext]="{title: 'weapons', items: hangarData.items.weapons}">
+      </ng-container>
+      <ng-container
+        [ngTemplateOutlet]="itemGroup"
+        [ngTemplateOutletContext]="{title: 'generators', items: hangarData.items.generators}">
       </ng-container>
       <ng-container
         [ngTemplateOutlet]="itemGroup"
@@ -113,9 +130,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let item of items">
+            <tr *ngFor="let item of getOrderedItems(items)">
               <ng-container *ngIf="checkIfPassFilter(item.name)">
-                <th scope="row" class="w-50">{{item.name}}</th>
+                <th scope="row" class="w-50">{{item.name | specialTitleCase}}</th>
                 <td class="align-middle w-25">{{item.quantity | asNumber}}</td>
                 <td class="align-middle w-25">{{getItemDiff(item)}}</td>
               </ng-container>

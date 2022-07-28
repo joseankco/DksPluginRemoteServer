@@ -16,7 +16,7 @@
 
 .stats {
   position: absolute;
-  top: 35px;
+  top: 50px;
 }
 
 .boosters {
@@ -29,6 +29,18 @@
   left: 5px;
   padding: 0;
   width: 48%;
+}
+
+.pet-info {
+  position:absolute;
+  bottom: 55px;
+  left: 5px;
+  padding: 0;
+  width: 12%;
+}
+
+.progress-small {
+  height: 0.4rem;
 }
 
 .target-info {

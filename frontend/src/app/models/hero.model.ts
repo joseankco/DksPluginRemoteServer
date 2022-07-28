@@ -27,6 +27,22 @@ export interface Destination {
   y: number;
 }
 
+export interface Pet {
+  isEnabled: boolean;
+  isActive: boolean;
+  x: number;
+  y: number;
+  hp: number;
+  maxHp: number;
+  shield: number;
+  maxShield: number;
+  fuel: number;
+  maxFuel: number;
+  hpPercent: number;
+  shieldPercent: number;
+  fuelPercent: number;
+}
+
 export interface Hero {
   id: string;
   x: number;
@@ -45,4 +61,5 @@ export interface Hero {
   target: Target;
   boosters: Booster[];
   destination: Destination;
+  pet: Pet;
 }

@@ -17,11 +17,15 @@
             {{data.stats.ping}}ms
           </div>
         </div>
+        <div class="row very-small">
+          <div class="col ps-3 pe-0 my-auto no-wrap">
+            {{data.config.selectedProfile}} | {{data.module.name}} | {{getSelectedMap()}}
+          </div>
+        </div>
       </div>
       <div class="overlay">
         <div class="row">
           <div class="col text-center map-name">
-            <p class="h6 mb-0">{{data.module.name}}</p>
             <p class="h6 mb-0">{{data.map.name}}</p>
             <p class="small mb-0">{{data.stats.runningTime}}</p>
           </div>
@@ -46,6 +50,47 @@
                   {{ booster.remainingTime * 1000 | millisecondsAsDHM }} {{booster.amount}}% {{booster.small}}
                 </p>
               </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="overlay">
+        <div class="row">
+          <div class="pet-info" *ngIf="data.hero.pet.isActive">
+            <div class="progress progress-small bg-success-op position-relative mt-1">
+              <div class="progress-bar bg-success" role="progressbar" [style]="{'width': data.hero.pet.hpPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                <!-- {{ data.hero.pet.hp.toLocaleString() }} / {{ data.hero.pet.maxHp.toLocaleString() }} -->
+              </p>
+            </div>
+            <div class="progress progress-small bg-primary-op position-relative mt-1" [ngClass]="{'transparent': data.hero.pet.maxShield === 0}">
+              <div class="progress-bar" role="progressbar" [style]="{'width': data.hero.pet.shieldPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                <!-- {{ data.hero.pet.shield.toLocaleString() }} / {{ data.hero.pet.maxShield.toLocaleString() }} -->
+              </p>
+            </div>
+            <div class="progress progress-small bg-white-op position-relative mt-1" [ngClass]="{'transparent': data.hero.pet.maxFuel === 0}">
+              <div class="progress-bar bg-white" role="progressbar" [style]="{'width': data.hero.pet.fuelPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                <!-- {{ data.hero.pet.fuel.toLocaleString() }} / {{ data.hero.pet.maxFuel.toLocaleString() }} -->
+              </p>
+            </div>
+          </div>
+          <div class="target-info" *ngIf="data.hero.target.isValid">
+            <div class="col text-center">
+              <p class="fw-bold small mb-0" [style]="{'color': getTargetColor()}">{{data.hero.target.name}}</p>
+            </div>
+            <div class="progress bg-success-op position-relative mt-1">
+              <div class="progress-bar bg-success" role="progressbar" [style]="{'width': data.hero.target.hpPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                {{ data.hero.target.hp.toLocaleString() }} / {{ data.hero.target.maxHp.toLocaleString() }}
+              </p>
+            </div>
+            <div class="progress bg-primary-op position-relative mt-1" [ngClass]="{'transparent': data.hero.target.maxShield === 0}">
+              <div class="progress-bar" role="progressbar" [style]="{'width': data.hero.target.shieldPercent * 100 + '%' }"></div>
+              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                {{ data.hero.target.shield.toLocaleString() }} / {{ data.hero.target.maxShield.toLocaleString() }}
+              </p>
             </div>
           </div>
         </div>
