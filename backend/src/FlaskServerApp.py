@@ -99,11 +99,15 @@ class Version(object):
             os.rename(self.fullpath, self.fullpath_old)
             with open(self.fullpath, 'wb') as output:
                 output.write(response.content)
+            os.system('cls')
             subprocess.run(self.fullpath + self.args)
         else:
             print('Error Updating. Manual Update at: ' + self.update_url)
             input()
         sys.exit(0)
+
+    def get_version_v(self):
+        return 'v' + self.version
 
     def __str__(self):
         return Fore.GREEN + \
@@ -146,7 +150,7 @@ def get_banner():
  | | | | |/ / __| |_) | | | | |/ _` | | '_ \ 
  | |_| |   <\__ \  __/| | |_| | (_| | | | | |
  |____/|_|\_\___/_|   |_|\__,_|\__, |_|_| |_|
-                               |___/ Ter.DKS''')
+ ''' + Version().get_version_v().rjust(29, ' ') + ''' |___/ Ter.DKS''')
     print(Style.RESET_ALL)
 
 

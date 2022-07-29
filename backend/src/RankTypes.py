@@ -79,7 +79,9 @@ class RankUtils(object):
             current_img = RankUtils.URL + str(int(upper_n) - 1) + '.png'
             current = RankDTO(current_name, daily_points.getText(), current_img)
 
-            return RankDataDTO(upper, current, lower)
+            if upper is not None and current is not None and lower is not None:
+                return RankDataDTO(upper, current, lower)
+            return None
         except BaseException as e:
             print('Exception Parse_Daily_Rank', str(e))
             return None
