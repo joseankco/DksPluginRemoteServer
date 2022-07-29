@@ -81,6 +81,12 @@ class ManagerAPI(object):
         self.backpage.set_sesion(instance, sid)
         self.hangar.set_sesion(instance, sid)
 
+    def get_sid(self):
+        return self.backpage.sid
+
+    def get_instance(self):
+        return self.backpage.instance
+
 
 class ManagerSingleton(object):
     instance: list[ManagerAPI] = []

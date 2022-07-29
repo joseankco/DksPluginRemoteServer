@@ -4,6 +4,7 @@ import {Subscription} from "rxjs";
 import {DarkBotService} from "../../../services/dark-bot.service";
 import {parseModule, ShipModule, sortModules} from "../../../models/ship-module.model";
 import {removeDuplicates, sortAlphabetically} from "../../../utils/utils";
+import {UrlShipPipe} from "../../../pipes/url-ship.pipe";
 
 @Component({
   selector: 'app-upgrade-modules',

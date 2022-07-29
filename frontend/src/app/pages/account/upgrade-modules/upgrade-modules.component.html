@@ -122,8 +122,9 @@
             </ng-container>
           </td>
           <td class="align-middle">
-            <img class="item-icon" *ngFor="let ship of module.ships"
-                 [src]="ship | urlItem" [matTooltip]="ship" matTooltipPosition="above" alt="ship"
+            <img class="item-icon" *ngFor="let ship of module.ships; index as i"
+                 [src]="ship | urlShip: module : i"
+                 [matTooltip]="ship" matTooltipPosition="above" [alt]="ship"
                  [ngClass]="{'item-icon-selected': filterShip && filterShip === ship}"
             >
           </td>

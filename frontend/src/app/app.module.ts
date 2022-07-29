@@ -24,8 +24,10 @@ import { MillisecondsAsDHMPipe } from './pipes/milliseconds-as-dhm.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { SpecialTitleCasePipe } from './pipes/special-title-case.pipe';
-import { UrlItemPipe } from './pipes/url-item.pipe';
+import { UrlShipPipe } from './pipes/url-ship.pipe';
 import {MatTooltipModule} from "@angular/material/tooltip";
+import { UrlItemPipe } from './pipes/url-item.pipe';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     UpgradeModulesComponent,
     MillisecondsAsDHMPipe,
     SpecialTitleCasePipe,
-    UrlItemPipe
+    UrlShipPipe,
+    UrlItemPipe,
+    LoginComponent
   ],
     imports: [
         BrowserModule,

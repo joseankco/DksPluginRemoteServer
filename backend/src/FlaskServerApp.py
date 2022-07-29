@@ -1,21 +1,22 @@
-import sys
-import time
-
-import requests
-from flask import Flask
-import threading
 import argparse
+import hashlib
+import io
+import json
+import os
+import ssl
+import subprocess
+import sys
+import threading
+import time
+import webbrowser
+from pathlib import Path
+
+import qrcode
+import requests
+from colorama import *
+from flask import Flask
 from pyngrok import ngrok, conf, installer
 from pyngrok.conf import PyngrokConfig
-import ssl
-import qrcode
-import os
-from pathlib import Path
-import io
-from colorama import *
-import webbrowser
-import json
-import subprocess
 
 init()
 
@@ -34,8 +35,8 @@ def install_ngrok():
 
 class Version(object):
     def __init__(self):
-        self.version = '3.0.2'
-        self.min_plugin_version = '1.3.9'
+        self.version = '3.1.1'
+        self.min_plugin_version = '1.4.0'
         self.url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/server.json'
         self.update_url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/RemoteStatsServer.exe'
         self.latest_version = None
@@ -44,6 +45,7 @@ class Version(object):
         self.fullpath = None
         self.fullpath_old = None
         self.args = None
+        self.working_dir = None
         self.load_directories()
 
     def load_directories(self):
@@ -54,6 +56,7 @@ class Version(object):
         else:
             self.fullpath = current + '\\' + exe
         self.fullpath_old = self.fullpath + '_old'
+        self.working_dir = os.path.dirname(self.fullpath)
 
         if os.path.exists(self.fullpath_old):
             os.remove(self.fullpath_old)
@@ -227,7 +230,7 @@ class FlaskServerApp(object):
         print(Fore.RED + 'This URL contains your IP. Share at your own risk.' + Fore.RESET)
         print()
         print('k=kill, r=refresh, w=ngrok path, d=donate')
-        print('       v=version, u=check updates')
+        print('v=version, u=check updates, p=set password')
 
     def run(self):
         self.run_flask_thread()
@@ -269,5 +272,19 @@ class FlaskServerApp(object):
                 elif key.lower() in ['u', 'updates', '!u', '!updates']:
                     Version().check_updates()
                     time.sleep(5)
+                elif key.lower() in ['p', '!p', 'pass', '!pass', 'password', '!password']:
+                    pass1, pass2 = '', '0'
+                    while pass1 != pass2:
+                        while len(pass1) < 1:
+                            pass1 = input('Type password: ')
+                            if len(pass1) < 1:
+                                print('Invalid Password')
+                        pass2 = input('Confirm password: ')
+                        if pass1 != pass2:
+                            print('Wrong Confirmation Password')
+
+                    with open(Version().working_dir + '\\passwd', 'w') as passwd:
+                        passwd.write(hashlib.md5(pass1.encode('utf-8')).hexdigest())
+
         except KeyboardInterrupt:
             self.kill()

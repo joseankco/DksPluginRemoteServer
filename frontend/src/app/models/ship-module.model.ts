@@ -12,6 +12,7 @@ export interface ShipModule {
   name: string;
   modifiers: ShipModuleModifier[];
   ships: string[];
+  shipsIds: string[];
 }
 
 export function parseModule(item: HangarItem) {
@@ -27,7 +28,8 @@ export function parseModule(item: HangarItem) {
         value: Number(tuple[1])
       } as ShipModuleModifier;
     }),
-    ships: item.ship_upgrade_ships
+    ships: item.ship_upgrade_ships,
+    shipsIds: !!item?.properties?.ships ? item.properties.ships.split(',') : []
   } as ShipModule;
 }
 

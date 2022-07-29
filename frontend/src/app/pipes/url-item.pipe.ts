@@ -8,17 +8,11 @@ export class UrlItemPipe implements PipeTransform {
   url = 'https://darkorbit-22.bpsecure.com/do_img/global/items/';
   transform(value: unknown, ...args: unknown[]): unknown {
     let desc = value as string;
-    let append = '';
-    if (desc.startsWith('ship_') &&
-      (desc.endsWith('aegis') ||
-      desc.endsWith('citadel') ||
-      desc.endsWith('spearhead') ||
-      desc.startsWith('ship_a-') ||
-      desc.startsWith('ship_c-') ||
-      desc.startsWith('ship_s-'))
-    ) {
-      append = '-eic'
+    if (desc.includes('isochronate')) {
+      desc = desc.replace('collectable', 'blueprint');
     }
-    return this.url + replaceAll(desc, '_', '/') + append + '_30x30.png'
+    let arg0 = desc.includes('blueprint') ? 30 : args[0];
+    let arg = arg0 ? '_' + arg0 + 'x' + arg0 + '.png' : '_100x100.png';
+    return this.url + replaceAll(desc, '_', '/') + arg;
   }
 }

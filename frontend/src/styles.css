@@ -6,12 +6,16 @@
   background-color: rgb(120, 120, 120);
 }
 
-.bg-color-dark22 {
+.bg-color-soft-dark {
   background-color: #343a40 !important;
 }
 
 .bg-color-dark {
   background-color: #212529 !important;
+}
+
+.bg-color-darker {
+  background-color: #111315 !important;
 }
 
 body {
@@ -132,12 +136,20 @@ a[aria-expanded="true"] img {
 
 .item-icon {
   border-radius: 10px;
-  border: #0b0f16 1px solid;
+  border: #0a0909 1px solid;
   margin: 0 2px;
+  height: 70px;
+  width: 70px;
+  background-color: #5e5e5e52;
 }
 
 .item-icon-selected {
-  border-radius: 10px;
   border: white 1px solid;
-  margin: 0 2px;
+}
+
+.item-icon-sm {
+  height: 30px;
+  width: 30px;
+  border: none;
+  background-color: transparent;
 }

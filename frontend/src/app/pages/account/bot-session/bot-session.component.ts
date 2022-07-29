@@ -20,6 +20,9 @@ export class BotSessionComponent implements OnInit {
   isChangingModule: boolean = false;
   isChangingMap: boolean = false;
   isChangingProfile: boolean = false;
+  isFocusingModule: boolean = false;
+  isFocusingMap: boolean = false;
+  isFocusingProfile: boolean = false;
 
   constructor(
     public darkbot: DarkBotService
@@ -29,7 +32,9 @@ export class BotSessionComponent implements OnInit {
     const sub = this.darkbot.getData().subscribe(data => {
       if (this.darkbot.isSingle()) {
         this.data = data as ServerResponse;
-        this.botConfig = this.data.config;
+        if (!this.botConfig || (!this.isFocusingProfile && !this.isFocusingModule && !this.isFocusingMap)) {
+          this.botConfig = this.data.config;
+        }
         if (this.currentModuleId) {
           const rcurrent = this.data.config.selectedModuleId;
           if (this.currentModuleId === rcurrent) {

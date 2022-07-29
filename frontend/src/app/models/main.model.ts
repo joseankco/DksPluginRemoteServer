@@ -21,3 +21,8 @@ export interface ServerResponse {
   deaths: Deaths;
   config: BotConfig;
 }
+
+export interface LoginResponse {
+  instance: string;
+  sid: string;
+}

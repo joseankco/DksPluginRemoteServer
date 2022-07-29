@@ -35,6 +35,9 @@
               <li class="nav-item">
                 <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/modules">Modules</a>
               </li>
+              <li class="nav-item cursor-pointer" *ngIf="!isMobilePhone()">
+                <a class="nav-link" (click)="setOpenClient(login)" [matTooltip]="'Open DarkOrbit Client by ⎛⎝ Kaiserdj™ ⎠⎞'" matTooltipPosition="below">Launcher</a>
+              </li>
             </ng-container>
           </ng-container>
         </ul>
@@ -42,3 +45,5 @@
     </ng-container>
   </div>
 </nav>
+
+<app-login #login (onSuccess)="setLoginResponse($event)"></app-login>

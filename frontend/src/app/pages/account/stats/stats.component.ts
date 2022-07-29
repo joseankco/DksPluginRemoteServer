@@ -4,6 +4,8 @@ import {RankService} from "../../../services/rank.service";
 import {RankData} from "../../../models/rank-data.model";
 import {HangarData, HangarItem} from "../../../models/hangar-data.model";
 import {Subscription} from "rxjs";
+import {UrlShipPipe} from "../../../pipes/url-ship.pipe";
+import {UrlItemPipe} from "../../../pipes/url-item.pipe";
 
 @Component({
   selector: 'app-stats',
@@ -59,5 +61,10 @@ export class StatsComponent implements OnInit, OnDestroy {
 
   getOrderedItems(items: HangarItem[]) {
     return items.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
+  }
+
+  defaultItem(event: ErrorEvent, loot_desc: string) {
+    (event.target as HTMLImageElement).src = <string>new UrlItemPipe().transform(loot_desc, 30);
+    event.target?.removeEventListener('error', null);
   }
 }

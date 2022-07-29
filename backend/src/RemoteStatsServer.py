@@ -6,7 +6,7 @@ from flask_sock import Sock
 import sys
 import os
 import json
-from FlaskServerApp import FlaskServerApp
+from FlaskServerApp import FlaskServerApp, Version
 import logging
 from flask_cors import CORS
 
@@ -143,6 +143,15 @@ def parse_post_data(data):
     return data
 
 
+def get_sesion_data():
+    global account_id
+    manager = manager_api_hash.get(account_id, None)
+    if manager is None:
+        manager = ManagerSingleton(account_id)
+        manager_api_hash[account_id] = manager
+    return [manager.get_sid(), manager.get_instance()]
+
+
 def parse_data_to_json(data):
     return json.dumps(data, default=lambda x: x.__dict__)
 
@@ -161,6 +170,27 @@ def set_account():
 
     response = jsonify()
     response.status_code = 200
+    return response
+
+
+@app.route('/get-sid', methods=['POST'])
+def get_sid():
+    global account_id
+    data = request.get_json()
+    pswd = hashlib.md5(data['password'].encode('utf-8')).hexdigest()
+
+    checked = False
+    with open(Version().working_dir + '\\passwd', 'r') as passwd:
+        checked = passwd.readlines()[0] == pswd
+
+    if checked:
+        sesion = get_sesion_data()
+        response = jsonify({'sid': sesion[0], 'instance': sesion[1]})
+        response.status_code = 200
+        return response
+
+    response = jsonify()
+    response.status_code = 403
     return response
 
 

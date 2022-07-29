@@ -1,8 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DarkBotService} from "../../services/dark-bot.service";
-import {ServerResponse} from "../../models/main.model";
+import {LoginResponse, ServerResponse} from "../../models/main.model";
 import {ActivatedRoute} from "@angular/router";
-import {Subscription} from "rxjs";
+import {firstValueFrom, Subscription} from "rxjs";
+import {LoginComponent} from "../login/login.component";
+import {isMobilePhone} from "../../utils/utils";
 
 @Component({
   selector: 'app-header',
@@ -15,6 +17,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   multiple: ServerResponse[] | undefined;
   subscriptions$: Subscription[] = [];
   id: string = '';
+  password: string | undefined;
+  action: string = '';
+  logged: LoginResponse | undefined;
 
   constructor(
     public darkbot: DarkBotService,
@@ -38,4 +43,29 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscriptions$.forEach(s => s.unsubscribe());
   }
 
+  setLoginResponse(event: LoginResponse) {
+    this.logged = event;
+    if (this.action === 'open-client') {
+      this.openClient();
+    }
+  }
+
+  setOpenClient(login: LoginComponent) {
+    if (!this.logged) {
+      login.openModal();
+      this.action = 'open-client';
+    } else {
+      this.openClient();
+    }
+  }
+
+  openClient() {
+    if (this.logged) {
+      window.open('darkorbit-client://' + this.logged.instance + '?dosid=' + this.logged.sid)
+    }
+  }
+
+  isMobilePhone() {
+    return isMobilePhone();
+  }
 }

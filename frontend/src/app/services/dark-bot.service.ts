@@ -48,6 +48,10 @@ export class DarkBotService {
     return this.http.post(this.getUrlBackend() + '/set-account', {id: id});
   }
 
+  public getSid(password: string) {
+    return this.http.post(this.getUrlBackend() + '/get-sid', {password: password});
+  }
+
   public disconnect() {
     console.log('Disconnect trigger')
     return this.websocket.close();

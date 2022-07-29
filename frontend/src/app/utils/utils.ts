@@ -16,3 +16,7 @@ export function replaceAll(str: string, find: string, replace: string) {
     replace
   );
 }
+
+export function isMobilePhone() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent)
+}

@@ -2,7 +2,8 @@
   <div class="row" *ngIf="botConfig && darkbot.isConnected()">
     <div class="col-12 col-md">
       <div class="wrapper">
-        <select class="form-control" [(ngModel)]="currentProfile" (ngModelChange)="setNewProfile()">
+        <select class="form-control" [(ngModel)]="currentProfile"
+                (ngModelChange)="setNewProfile()" (focus)="isFocusingProfile = true" (blur)="isFocusingProfile = false">
           <option [ngValue]="undefined" hidden>
             Change profile...
           </option>
@@ -17,7 +18,8 @@
     </div>
     <div class="col-12 col-md mt-2 mt-md-auto">
       <div class="wrapper">
-        <select class="form-control" [(ngModel)]="currentModuleId" (ngModelChange)="setNewModule()">
+        <select class="form-control" [(ngModel)]="currentModuleId"
+                (ngModelChange)="setNewModule()" (focus)="isFocusingModule = true" (blur)="isFocusingModule = false">
           <option [ngValue]="undefined" hidden>
             Change module...
           </option>
@@ -32,7 +34,8 @@
     </div>
     <div class="col-12 col-md mt-2 mt-md-auto">
       <div class="wrapper">
-        <select class="form-control" [(ngModel)]="currentMapId" (ngModelChange)="setNewMap()">
+        <select class="form-control" [(ngModel)]="currentMapId"
+                (ngModelChange)="setNewMap()" (focus)="isFocusingMap = true" (blur)="isFocusingMap = false">
           <option [ngValue]="undefined" hidden>
             Change map...
           </option>
