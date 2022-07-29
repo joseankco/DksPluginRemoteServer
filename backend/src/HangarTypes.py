@@ -242,11 +242,6 @@ class HangarItemsDiffDTO(object):
             'diff': list(set(current.get_modules_id()) - set(init.get_modules_id()))
         }
 
-    def get_quantity(self, items: HangarItemsDTO, item: ItemDTO):
-        if item.is_ship_module():
-            return items.get_quantity_loot_desc(item.loot_desc)
-        return item.quantity
-
 
 class HangarDataTransferDTO(object):
     def __init__(self, init: HangarItemsDTO, now: HangarItemsDTO, diff: HangarItemsDiffDTO):

@@ -168,8 +168,9 @@ class HangarAPI(ManagerAbstract):
         data_decoded = base64.b64decode(r.text)
         data = json.loads(data_decoded)
         if data['isError'] == 0:
-            self.hangar_list = HangarListDTO(data['data']['ret']['hangars'])
-            return True
+            if 'data' in data.keys() and 'ret' in data['data'].keys():
+                self.hangar_list = HangarListDTO(data['data']['ret']['hangars'])
+                return True
         return False
 
     def refresh_items(self):
@@ -192,11 +193,12 @@ class HangarAPI(ManagerAbstract):
         data_decoded = base64.b64decode(r.text)
         data = json.loads(data_decoded)
         if data['isError'] == 0:
-            items = data['data']['ret']['items']
-            infos = data['data']['ret']['itemInfo']
-            lootsid = data['data']['map']['lootIds']
-            self.hangar_items = HangarItemsDTO(items, infos, lootsid)
-            return True
+            if 'data' in data.keys() and 'ret' in data['data'].keys():
+                items = data['data']['ret']['items']
+                infos = data['data']['ret']['itemInfo']
+                lootsid = data['data']['map']['lootIds']
+                self.hangar_items = HangarItemsDTO(items, infos, lootsid)
+                return True
         return False
 
     def get_url_action(self, action: HangarActions):

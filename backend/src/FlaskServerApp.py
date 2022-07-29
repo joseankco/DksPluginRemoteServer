@@ -15,6 +15,7 @@ import io
 from colorama import *
 import webbrowser
 import json
+import subprocess
 
 init()
 
@@ -33,12 +34,33 @@ def install_ngrok():
 
 class Version(object):
     def __init__(self):
-        self.version = '3.0.1'
+        self.version = '3.0.2'
         self.min_plugin_version = '1.3.9'
         self.url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/server.json'
         self.update_url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/RemoteStatsServer.exe'
         self.latest_version = None
         self.latest_min_plugin_version = None
+
+        self.fullpath = None
+        self.fullpath_old = None
+        self.args = None
+        self.load_directories()
+
+    def load_directories(self):
+        exe = sys.argv[0]
+        current = os.getcwd()
+        if os.path.isabs(exe):
+            self.fullpath = exe
+        else:
+            self.fullpath = current + '\\' + exe
+        self.fullpath_old = self.fullpath + '_old'
+
+        if os.path.exists(self.fullpath_old):
+            os.remove(self.fullpath_old)
+
+        self.args = ' '
+        for i in range(1, len(sys.argv)):
+            self.args += sys.argv[i] + ' '
 
     def load_latest_version(self):
         try:
@@ -67,10 +89,21 @@ class Version(object):
             print('Do you want to download the latest version? (y/N)')
             key = input('> ')
             if key.lower() in ['y', 'ye', 'yes', 'si', 'sí', 's']:
-                print(self.update_url)
-                webbrowser.open(self.update_url, new=2)
+                self.do_update()
             if key.lower() != 'imadevxd':
                 sys.exit(0)
+
+    def do_update(self):
+        response = requests.get(self.update_url)
+        if response.status_code == 200:
+            os.rename(self.fullpath, self.fullpath_old)
+            with open(self.fullpath, 'wb') as output:
+                output.write(response.content)
+            subprocess.run(self.fullpath + self.args)
+        else:
+            print('Error Updating. Manual Update at: ' + self.update_url)
+            input()
+        sys.exit(0)
 
     def __str__(self):
         return Fore.GREEN + \
