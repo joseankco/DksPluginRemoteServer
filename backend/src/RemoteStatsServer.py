@@ -180,17 +180,22 @@ def get_sid():
     pswd = hashlib.md5(data['password'].encode('utf-8')).hexdigest()
 
     checked = False
-    with open(Version().working_dir + '\\passwd', 'r') as passwd:
-        checked = passwd.readlines()[0] == pswd
+    if os.path.exists(Version().working_dir + '\\passwd'):
+        with open(Version().working_dir + '\\passwd', 'r') as passwd:
+            checked = passwd.readlines()[0] == pswd
 
-    if checked:
-        sesion = get_sesion_data()
-        response = jsonify({'sid': sesion[0], 'instance': sesion[1]})
-        response.status_code = 200
-        return response
+        if checked:
+            sesion = get_sesion_data()
+            response = jsonify({'sid': sesion[0], 'instance': sesion[1]})
+            response.status_code = 200
+            return response
+        else:
+            response = jsonify()
+            response.status_code = 403
+            return response
 
     response = jsonify()
-    response.status_code = 403
+    response.status_code = 404
     return response
 
 

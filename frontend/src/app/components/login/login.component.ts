@@ -2,6 +2,7 @@ import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@a
 import {LoginResponse} from "../../models/main.model";
 import {DarkBotService} from "../../services/dark-bot.service";
 import {firstValueFrom} from "rxjs";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-login',
@@ -34,8 +35,15 @@ export class LoginComponent implements OnInit {
         this.closer.nativeElement.click();
       }
       this.error = '';
-    }).catch(() => {
-        this.error = 'Invalid Password';
+    }).catch((reason: HttpErrorResponse) => {
+      switch (reason.status) {
+        case 403:
+          this.error = 'Invalid Password.'
+          break;
+        case 404:
+          this.error = 'Unable to Authenticate. Unsetted password in Server.';
+          break;
+      }
     });
   }
 }
