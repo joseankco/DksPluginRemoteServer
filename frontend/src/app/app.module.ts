@@ -24,6 +24,8 @@ import { MillisecondsAsDHMPipe } from './pipes/milliseconds-as-dhm.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { SpecialTitleCasePipe } from './pipes/special-title-case.pipe';
+import { UrlItemPipe } from './pipes/url-item.pipe';
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import { SpecialTitleCasePipe } from './pipes/special-title-case.pipe';
     TickAsTimePipe,
     UpgradeModulesComponent,
     MillisecondsAsDHMPipe,
-    SpecialTitleCasePipe
+    SpecialTitleCasePipe,
+    UrlItemPipe
   ],
     imports: [
         BrowserModule,
@@ -52,7 +55,8 @@ import { SpecialTitleCasePipe } from './pipes/special-title-case.pipe';
         HttpClientModule,
         FormsModule,
         BrowserAnimationsModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatTooltipModule
     ],
   providers: [],
   bootstrap: [AppComponent]

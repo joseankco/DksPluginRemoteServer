@@ -132,7 +132,10 @@
             <tbody>
             <tr *ngFor="let item of getOrderedItems(items)">
               <ng-container *ngIf="checkIfPassFilter(item.name)">
-                <th scope="row" class="w-50">{{item.name | specialTitleCase}}</th>
+                <th scope="row" class="w-50">
+                  {{item.name | specialTitleCase}}
+                  <img class="item-icon" [src]="item.loot_desc | urlItem">
+                </th>
                 <td class="align-middle w-25">{{item.quantity | asNumber}}</td>
                 <td class="align-middle w-25">{{getItemDiff(item)}}</td>
               </ng-container>

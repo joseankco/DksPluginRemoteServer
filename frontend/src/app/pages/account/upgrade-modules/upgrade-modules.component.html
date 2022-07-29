@@ -62,7 +62,7 @@
       <div class="form-check form-check-inline form-switch">
         <input class="form-check-input" [ngClass]="{'bg-dark': toggleNews}"
                [(ngModel)]="toggleNews" type="checkbox" role="switch" id="toggler-news">
-        <label class="form-check-label" for="toggler-news">Only New</label>
+        <label class="form-check-label" for="toggler-news">New</label>
       </div>
     </div>
   </div>
@@ -74,7 +74,7 @@
           <tr>
             <th scope="col">name</th>
             <th scope="col">modifiers</th>
-            <th scope="col" *ngIf="!filterShip">ships</th>
+            <th scope="col">ships</th>
           </tr>
           </thead>
           <tbody>
@@ -121,8 +121,11 @@
               </p>
             </ng-container>
           </td>
-          <td class="align-middle" *ngIf="!filterShip">
-            {{getShips(module)}}
+          <td class="align-middle">
+            <img class="item-icon" *ngFor="let ship of module.ships"
+                 [src]="ship | urlItem" [matTooltip]="ship" matTooltipPosition="above" alt="ship"
+                 [ngClass]="{'item-icon-selected': filterShip && filterShip === ship}"
+            >
           </td>
         </ng-container>
       </tr>

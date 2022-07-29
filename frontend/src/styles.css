@@ -129,3 +129,15 @@ a[aria-expanded="true"] img {
 .wrapper {
   position: relative;
 }
+
+.item-icon {
+  border-radius: 10px;
+  border: #0b0f16 1px solid;
+  margin: 0 2px;
+}
+
+.item-icon-selected {
+  border-radius: 10px;
+  border: white 1px solid;
+  margin: 0 2px;
+}

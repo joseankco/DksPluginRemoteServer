@@ -9,3 +9,10 @@ export function removeDuplicatesN(array: number[]) {
 export function sortAlphabetically(array: string[]) {
   return array.sort((a, b) => a > b ? 1 : -1);
 }
+
+export function replaceAll(str: string, find: string, replace: string) {
+  return str.replace(
+    new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+    replace
+  );
+}
