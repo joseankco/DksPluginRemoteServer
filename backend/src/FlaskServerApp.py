@@ -19,6 +19,7 @@ from pyngrok import ngrok, conf, installer
 from pyngrok.conf import PyngrokConfig
 
 init()
+os.system('title DksPluginRemoteServer')
 
 NGROK_PATH = str(Path.home()) + '\\ngrok\\ngrok.exe'
 conf.set_default(PyngrokConfig(ngrok_path=NGROK_PATH))
@@ -35,7 +36,7 @@ def install_ngrok():
 
 class Version(object):
     def __init__(self):
-        self.version = '3.1.1'
+        self.version = '3.1.3'
         self.min_plugin_version = '1.4.0'
         self.url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/server.json'
         self.update_url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/RemoteStatsServer.exe'
@@ -58,8 +59,7 @@ class Version(object):
         self.fullpath_old = self.fullpath + '_old'
         self.working_dir = os.path.dirname(self.fullpath)
 
-        if os.path.exists(self.fullpath_old):
-            os.remove(self.fullpath_old)
+        self.try_remove_old()
 
         self.args = ' '
         for i in range(1, len(sys.argv)):
@@ -96,14 +96,20 @@ class Version(object):
             if key.lower() != 'imadevxd':
                 sys.exit(0)
 
+    def try_remove_old(self):
+        if os.path.exists(self.fullpath_old):
+            os.remove(self.fullpath_old)
+
     def do_update(self):
+        self.try_remove_old()
         response = requests.get(self.update_url)
         if response.status_code == 200:
             os.rename(self.fullpath, self.fullpath_old)
             with open(self.fullpath, 'wb') as output:
                 output.write(response.content)
             os.system('cls')
-            subprocess.run(self.fullpath + self.args)
+            flags = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+            subprocess.Popen(self.fullpath + self.args, shell=True, creationflags=flags)
         else:
             print('Error Updating. Manual Update at: ' + self.update_url)
             input()
@@ -245,6 +251,7 @@ class FlaskServerApp(object):
 
     def run_gui(self):
         try:
+            Version().try_remove_old()
             while True:
                 self.print_status()
                 key = input('> ')
