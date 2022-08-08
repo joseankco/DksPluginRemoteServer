@@ -1,0 +1,438 @@
+<ng-container *ngIf="data">
+  <ng-container [ngTemplateOutlet]="info"></ng-container>
+  <ng-container [ngTemplateOutlet]="gates"></ng-container>
+  <ng-container [ngTemplateOutlet]="boosts"></ng-container>
+</ng-container>
+
+<ng-template #info>
+  <div class="row">
+    <div class="col text-start">
+      <label class="fw-bold h5">Galaxy Gates</label>
+    </div>
+    <div class="col text-end">
+      <label class="fw-bold h5">checked at {{galaxyData.now.tick | tickAsTime}}</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="table-responsive">
+        <table class="table table-sm table-dark text-center">
+          <thead>
+          <tr>
+            <th scope="col" class="align-middle">uri</th>
+            <th scope="col" class="align-middle">extra energy</th>
+            <th scope="col" class="align-middle">spin cost</th>
+            <th scope="col" class="align-middle">spinning</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="align-middle">{{data.uri.toLocaleString()}}</td>
+            <td class="align-middle">
+              {{data.ee.toLocaleString()}}
+              <ng-container *ngIf="galaxyData.diff.eeDiff !== 0">
+                <span class="very-small text-success" [ngClass]="{'text-danger': galaxyData.diff.eeDiff < 0}">
+                  <ng-container *ngIf="galaxyData.diff.eeDiff > 0">+</ng-container>{{galaxyData.diff.eeDiff}}
+                </span>
+              </ng-container>
+            </td>
+            <td class="align-middle">{{data.eeCost}} <ng-container *ngIf="data.spinOnSale">({{data.spinSalePercentage}}% discount)</ng-container></td>
+            <td class="align-middle">x{{data.selectedSpinAmmount}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #gates>
+  <div class="row">
+    <div class="col">
+      <div class="table-responsive">
+        <table class="table table-sm table-dark text-center">
+          <thead>
+          <tr>
+            <th scope="col" class="align-middle">gate</th>
+            <th scope="col" class="align-middle">prepared</th>
+            <th scope="col" class="align-middle">parts</th>
+            <th scope="col" class="align-middle">wave</th>
+            <th scope="col" class="align-middle">lives</th>
+            <th scope="col" class="align-middle">details</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let gate of data.gates">
+            <th scope="row" class="wrapper w-30">
+              <img class="img img-icon gg-reward" src="assets/gg/bonus_gg_reward.png" alt="" *ngIf="gate.bonusGGReward">
+              {{gate.name}}
+            </th>
+            <td class="align-middle">{{gate.prepared}}</td>
+            <td class="align-middle">{{gate.parts.current}} / {{gate.parts.total}}</td>
+            <td class="align-middle">
+              <ng-container *ngIf="gate.waves.current !== 0">{{gate.waves.current}}</ng-container>
+              <ng-container *ngIf="gate.waves.current === 0">-</ng-container>
+              / {{gate.waves.total}}
+            </td>
+            <td class="align-middle">
+              <span *ngIf="gate.lives !== -1"
+                    [matTooltip]="'Life Price: ' + gate.lifePrice.toLocaleString()"
+                    matTooltipPosition="above">
+                {{gate.lives}}
+              </span>
+              <ng-container *ngIf="gate.lives === -1">-</ng-container>
+            </td>
+            <td class="align-middle cursor-pointer" data-bs-toggle="modal" data-bs-target="#details-modal" (click)="detailed = gate">
+              <img class="img img-icon-sm" src="assets/visibility.png" alt="">
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #boosts>
+  <div class="row mb-4" *ngIf="stats && stats.total > 0">
+    <div class="col-6">
+      <label class="h5 fw-bold">{{stats.total.toLocaleString()}} spins sample</label>
+    </div>
+    <div class="col-6">
+      <label class="h5 fw-bold">Last spins</label>
+    </div>
+    <div class="col cursor-pointer" (click)="showDetailedLastSpins = !showDetailedLastSpins">
+      <ng-container [ngTemplateOutlet]="lastSpinsSummary"></ng-container>
+      <ng-container [ngTemplateOutlet]="lastSpinsDetailed"></ng-container>
+    </div>
+    <div class="col">
+      <div class="bg-dark spins-container" [ngStyle]="{'max-height.px': 500}">
+        <ng-container *ngFor="let boost of data.boosts; let i=index">
+          <div class="text-center">
+            <ng-container *ngFor="let item of boost.items; let j=index">
+              <div class="mb-0 boost-item type-{{item.type}}-op fw-bold wrapper"
+                   [ngClass]="{'border-multiplier': item.multiplierUsed > 0, 'mt-1': j > 0}"
+                   *ngIf="!item.duplicate"
+                   matTooltip="{{item.date * 1000 | date: 'HH:mm dd/MM/yyyy'}}" matTooltipPosition="above"
+              >
+                <ng-container *ngIf="item.amount > 0">
+                  {{item.amount}}
+                </ng-container>
+                {{item.desc | specialTitleCase}}
+                <img class="img img-fluid boost-item-icon" [width]="35" [src]="'assets/gg/items/' + getItemSrc(item) + '.png'" alt="">
+                <span class="text-muted very-small align-middle spins-info" *ngIf="item.spins > 1">
+                  {{item.spins}} spins
+                </span>
+              </div>
+            </ng-container>
+          </div>
+          <hr class="my-2" *ngIf="i !== data.boosts.length - 1">
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #lastSpinsSummary>
+  <div class="table-responsive h-100" *ngIf="!showDetailedLastSpins">
+    <table class="table table-sm table-dark text-center h-100 mb-0">
+      <thead>
+      <tr>
+        <th scope="col" class="align-middle no-wrap">item</th>
+        <th scope="col" class="align-middle">spins</th>
+        <th scope="col" class="align-middle">%</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/part.png" alt="">
+            <img class="img" src="assets/gg/items/multiplier.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.part.spins}}</td>
+          <td class="align-middle">{{(stats.part.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/mcb-25.png" alt="">
+            <img class="img" src="assets/gg/items/mcb-50.png" alt="">
+            <img class="img" src="assets/gg/items/ucb-100.png" alt="">
+            <img class="img" src="assets/gg/items/sab-50.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.battery.spins}}</td>
+          <td class="align-middle">{{(stats.battery.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/plt-2021.png" alt="">
+            <img class="img" src="assets/gg/items/acm-01.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.rocket.spins}}</td>
+          <td class="align-middle">{{(stats.rocket.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/voucher.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.voucher.spins}}</td>
+          <td class="align-middle">{{(stats.voucher.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/logfile.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.logfile.spins}}</td>
+          <td class="align-middle">{{(stats.logfile.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/hitpoints.png" alt="">
+            <img class="img" src="assets/gg/items/nanohull.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.special.spins}}</td>
+          <td class="align-middle">{{(stats.special.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/xenomit.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.ore.spins}}</td>
+          <td class="align-middle">{{(stats.ore.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #lastSpinsDetailed>
+  <div class="table-responsive h-100" *ngIf="showDetailedLastSpins">
+    <table class="table table-sm table-dark text-center h-100 mb-0">
+      <thead>
+      <tr>
+        <th scope="col" class="align-middle no-wrap">item</th>
+        <th scope="col" class="align-middle">amount</th>
+        <th scope="col" class="align-middle">spins</th>
+        <th scope="col" class="align-middle">%</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="tr-merge">
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/part.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.part.items.part.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.part.items.part.spins}}</td>
+        <td class="align-middle">{{(stats.part.items.part.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+      <tr>
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/multiplier.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.part.items.multiplier.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.part.items.multiplier.spins}}</td>
+        <td class="align-middle">{{(stats.part.items.multiplier.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+
+      <tr class="tr-merge">
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/mcb-25.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.battery.items.mcb25.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.battery.items.mcb25.spins}}</td>
+        <td class="align-middle">{{(stats.battery.items.mcb25.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+      <tr class="tr-merge">
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/mcb-50.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.battery.items.mcb50.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.battery.items.mcb50.spins}}</td>
+        <td class="align-middle">{{(stats.battery.items.mcb50.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+      <tr class="tr-merge">
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/ucb-100.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.battery.items.ucb100.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.battery.items.ucb100.spins}}</td>
+        <td class="align-middle">{{(stats.battery.items.ucb100.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+      <tr>
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/sab-50.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.battery.items.sab50.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.battery.items.sab50.spins}}</td>
+        <td class="align-middle">{{(stats.battery.items.sab50.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+
+      <tr class="tr-merge">
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/plt-2021.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.rocket.items.plt2021.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.rocket.items.plt2021.spins}}</td>
+        <td class="align-middle">{{(stats.rocket.items.plt2021.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+      <tr>
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/acm-01.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.rocket.items.acm01.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.rocket.items.acm01.spins}}</td>
+        <td class="align-middle">{{(stats.rocket.items.acm01.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/voucher.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.voucher.spins}}</td>
+          <td class="align-middle">{{stats.voucher.spins}}</td>
+          <td class="align-middle">{{(stats.voucher.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+
+      <tr>
+        <ng-container>
+          <td class="align-middle no-wrap">
+            <img class="img" src="assets/gg/items/logfile.png" alt="">
+          </td>
+          <td class="align-middle">{{stats.logfile.spins}}</td>
+          <td class="align-middle">{{stats.logfile.spins}}</td>
+          <td class="align-middle">{{(stats.logfile.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+        </ng-container>
+      </tr>
+
+      <tr class="tr-merge">
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/hitpoints.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.special.items.hitpoints.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.special.items.hitpoints.spins}}</td>
+        <td class="align-middle">{{(stats.special.items.hitpoints.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+      <tr>
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/nanohull.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.special.items.nanohull.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.special.items.nanohull.spins}}</td>
+        <td class="align-middle">{{(stats.special.items.nanohull.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+
+      <tr>
+        <td class="align-middle no-wrap">
+          <img class="img" src="assets/gg/items/xenomit.png" alt="">
+        </td>
+        <td class="align-middle">{{stats.ore.items.xenomit.amount.toLocaleString()}}</td>
+        <td class="align-middle">{{stats.ore.items.xenomit.spins}}</td>
+        <td class="align-middle">{{(stats.ore.items.xenomit.spins / stats.total) * 100 | number: '1.0-2'}}%</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<div #modal class="modal" tabindex="-1" id="details-modal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content bg-color-darker border-white" *ngIf="detailed">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{detailed.name | uppercase}}
+        </h5>
+        <button type="button" class="btn bg-transparent" data-bs-dismiss="modal" aria-label="Close">
+          <img src="assets/close.png" class="img img-icon-sm my-1" alt="close">
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12 col-lg text-center" [ngClass]="{'col-lg-6': detailed.probabilities}">
+            <div class="wrapper-gg">
+              <img class="img galaxy-gate-main" [ngClass]="{'border-double-reward': data.galaxyGateDay || detailed.bonusGGReward}" src="assets/gg/bg/{{detailed.id}}.png" alt="">
+              <img class="img galaxy-gate-overlay" alt="" [src]="gg.getGalaxyGateFull(detailed.id)">
+              <img class="img galaxy-gate-overlay last-part" alt="" [src]="gg.getGalaxyGateFull(detailed.id, 'last')">
+              <p class="m-0 fw-bold text-warning galaxy-gate-overlay legible-text" *ngIf="data.galaxyGateDay">Double GG Reward</p>
+              <ng-container *ngIf="detailed.bonusGGReward">
+                <p class="m-0 fw-bold text-warning galaxy-gate-overlay legible-text">Bonus GG Reward</p>
+                <p class="m-0 fw-bold text-warning galaxy-gate-overlay bonus-reward-time very-small legible-text">{{detailed.bonusGGReward.countdown * 1000 | millisecondsAsDHM}}</p>
+              </ng-container>
+              <p class="m-0 fw-bold galaxy-parts">{{detailed.parts.current}} / {{detailed.parts.total}}</p>
+              <p class="m-0 fw-bold galaxy-lives" *ngIf="detailed.lives > 0">Lives: {{detailed.lives}}</p>
+              <p class="m-0 fw-bold galaxy-waves" *ngIf="detailed.lives > 0">Waves: {{detailed.waves.current}} / {{detailed.waves.total}}</p>
+              <div class="builder-overlay">
+                <p class="small margin-extreme" *ngFor="let builder of detailed.builders">
+                  {{builder.gate | titlecase}}: {{builder.current}} / {{builder.total}}
+                </p>
+              </div>
+              <ng-container *ngIf="detailed.bonusGGReward">
+                <img *ngIf="detailed.bonusGGReward.lootId.includes('ship_')" class="bonus-reward border-double-reward"
+                     [src]="detailed.bonusGGReward.lootId | urlShip" alt="">
+                <img *ngIf="!detailed.bonusGGReward.lootId.includes('ship_')" class="bonus-reward border-double-reward"
+                     [src]="detailed.bonusGGReward.lootId | urlItem: 100" alt="">
+                <p class="m-0 fw-bold bonus-reward-amount very-small no-wrap text-warning legible-text" *ngIf="detailed.bonusGGReward.amount > 1">
+                  {{detailed.bonusGGReward.amount.toLocaleString()}}
+                </p>
+              </ng-container>
+            </div>
+          </div>
+          <div class="col-12 col-lg my-lg-auto my-2 cursor-pointer" *ngIf="detailed.probabilities">
+            <ng-container *ngIf="getProbabilitiesOrder(detailed.probabilities) as probs">
+              <ng-container *ngFor="let prob of probs">
+                <div class="row" *ngIf="checkIfProbIsAmmo(prob, detailed.probabilities) as ammo" [matTooltip]="prob.id"
+                     data-bs-toggle="collapse" [attr.data-bs-target]="'#ammo'"
+                     aria-expanded="false">
+                  <ng-container *ngIf="getProbabilityAsset(prob) as asset">
+                    <div class="col text-end pe-0">
+                      <img class="img" src="assets/gg/items/{{asset}}.png" alt="">
+                    </div>
+                    <div class="col-10 pe-5">
+                      <div class="progress type-{{asset}}-op position-relative mt-1">
+                        <div class="progress-bar type-{{asset}}" role="progressbar" [style]="{'width': prob.percentage + '%' }"></div>
+                        <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                          {{ prob.percentage }}%
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-12 collapse" *ngIf="ammo.isAmmo" id="ammo">
+                      <div class="row" *ngFor="let prob2 of ammo.probs">
+                        <ng-container *ngIf="getProbabilityAsset(prob2) as asset2">
+                          <div class="col text-end pe-0">
+                            <img class="img" src="assets/gg/items/{{asset2}}.png" alt="">
+                          </div>
+                          <div class="col-9 pe-5">
+                            <div class="progress type-{{asset2}}-op position-relative mt-1">
+                              <div class="progress-bar type-{{asset2}}" role="progressbar" [style]="{'width': prob2.percentage + '%' }"></div>
+                              <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">
+                                {{ prob2.percentage }}%
+                              </p>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

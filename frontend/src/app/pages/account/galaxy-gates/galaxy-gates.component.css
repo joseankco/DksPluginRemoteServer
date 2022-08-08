@@ -1,0 +1,195 @@
+.galaxy-gate-overlay {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, 0);
+}
+
+.galaxy-parts {
+  position: absolute;
+  right: 10px;
+  bottom: 5px;
+}
+
+.galaxy-lives {
+  position: absolute;
+  left: 10px;
+  bottom: 25px;
+}
+
+.galaxy-waves {
+  position: absolute;
+  left: 10px;
+  bottom: 5px;
+}
+
+.last-part {
+  filter: sepia(1) saturate(10);
+}
+
+.galaxy-gate-main {
+  border: 1px solid;
+  border-radius: 10px;
+  height: 288px;
+  width: 365px;
+  object-fit: cover;
+}
+
+.border-double-reward {
+  border: 1px solid orange;
+  box-shadow: 0 0 10px 0 orange;
+}
+
+.wrapper-gg {
+  position: relative;
+  text-align: center !important;
+  display: inline-block;
+}
+
+.boost-item {
+  padding: 2px 10px;
+  border-radius: 5px;
+  border: 1px solid white;
+}
+
+.border-multiplier {
+  border-color: rgba(0, 255, 255);
+  border-width: 1px;
+}
+
+.type-part {
+  background-color: rgba(255, 174, 0, 1);
+}
+
+.type-part-op {
+  background-color: rgba(255, 174, 0, 0.2);
+}
+
+.type-battery, .type-rocket, .type-ammo, .type-mcb-25, .type-mcb-50, .type-ucb-100, .type-sab-50, .type-plt-2021, .type-acm-01 {
+  background-color: rgba(9, 73, 6, 1);
+}
+
+.type-battery-op, .type-rocket-op, .type-ammo-op, .type-mcb-25-op, .type-mcb-50-op, .type-ucb-100-op, .type-sab-50-op, .type-plt-2021-op, .type-acm-01-op {
+  background-color: rgba(9, 73, 6, 0.2);
+}
+
+.type-multiplier {
+  background-color: rgba(0, 255, 255, 1);
+  border-color: rgba(0, 255, 255);
+}
+
+.type-multiplier-op {
+  background-color: rgba(0, 255, 255, 0.2);
+  border-color: rgba(0, 255, 255);
+}
+
+.type-voucher {
+  background-color: rgba(115, 0, 255, 1);
+}
+
+.type-voucher-op {
+  background-color: rgba(115, 0, 255, 0.2);
+}
+
+.type-logfile {
+  background-color: rgba(22, 121, 121, 1);
+}
+
+.type-logfile-op {
+  background-color: rgba(22, 121, 121, 0.2);
+}
+
+.type-special, .type-nanohull {
+  background-color: rgba(255, 233, 0, 1);
+}
+
+.type-special-op, .type-nanohull-op{
+  background-color: rgba(255, 233, 0, 0.2);
+}
+
+.type-hitpoints {
+  background-color: rgba(0, 255, 9, 1);
+}
+
+.type-hitpoints-op {
+  background-color: rgba(0, 255, 9, 0.2);
+}
+
+.type-ore, .type-xenomit {
+  background-color: rgba(25, 37, 37, 1);
+}
+
+.type-ore-op, .type-xenomit-op {
+  background-color: rgba(25, 37, 37, 0.2);
+}
+
+.boost-item-icon {
+  margin-bottom: 2px;
+  margin-left: -5px;
+  margin-right: -5px;
+}
+
+.spins-container {
+  overflow-y: auto;
+  padding: 10px 10px 10px 10px;
+  border-radius: 10px;
+}
+
+.spins-info {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.builder-overlay {
+  text-align: right;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  border-radius: 5px;
+  background: #00000096;
+  padding: 5px;
+}
+
+.margin-extreme {
+  margin-bottom: -5px !important;
+  margin-top: -5px !important;
+}
+
+.tr-merge {
+  border-bottom-color: transparent;
+}
+
+.gg-reward {
+  position: absolute;
+  left: 1%;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.bonus-reward {
+  position: absolute;
+  left: 10px;
+  top: 15px;
+  width: 60px;
+  border-radius: 10px;
+  background-color: #000000b5;
+}
+
+.bonus-reward-amount {
+  position: absolute;
+  left: 10px;
+  top: 75px;
+  width: 60px;
+}
+
+.bonus-reward-time {
+  top: 20px;
+}
+
+.legible-text {
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+

@@ -10,6 +10,8 @@ import {PalladiumStatsComponent} from "./pages/account/palladium-stats/palladium
 import {ChangeConnectionGuard} from "./guards/change-connection.guard";
 import {StatsComponent} from "./pages/account/stats/stats.component";
 import {UpgradeModulesComponent} from "./pages/account/upgrade-modules/upgrade-modules.component";
+import {GalaxyGatesComponent} from "./pages/account/galaxy-gates/galaxy-gates.component";
+import {PilotSheetComponent} from "./pages/account/pilot-sheet/pilot-sheet.component";
 
 const routes: Routes = [
   { path: '', component: AppComponent, canActivate: [ChangeConnectionGuard], children:
@@ -22,7 +24,9 @@ const routes: Routes = [
           { path: 'logs', component: GameLogComponent },
           { path: 'scrapper', component: LogScrapperComponent },
           { path: 'palladium', component: PalladiumStatsComponent },
-          { path: 'modules', component: UpgradeModulesComponent }
+          { path: 'modules', component: UpgradeModulesComponent },
+          { path: 'galaxy-gates', component: GalaxyGatesComponent },
+          { path: 'pilot-sheet', component: PilotSheetComponent }
         ]
       }
     ]

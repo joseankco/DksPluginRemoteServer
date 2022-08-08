@@ -56,7 +56,7 @@
       </div>
       <div class="overlay">
         <div class="row">
-          <div class="pet-info" *ngIf="data.hero.pet.isActive">
+          <div class="pet-info" [ngClass]="{'pet-info-upper': data.hero.hull !== 0}" *ngIf="data.hero.pet.isActive">
             <div class="progress progress-small bg-success-op position-relative mt-1">
               <div class="progress-bar bg-success" role="progressbar" [style]="{'width': data.hero.pet.hpPercent * 100 + '%' }"></div>
               <p class="justify-content-center fw-bold d-flex position-absolute w-100 text-light mb-0 small">

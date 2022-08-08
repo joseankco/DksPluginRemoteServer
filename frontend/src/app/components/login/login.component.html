@@ -1,9 +1,9 @@
 <button #trigger [hidden]="true" data-bs-toggle="modal" data-bs-target="#login-modal"></button>
-<div class="modal" tabindex="-1" id="login-modal">
+<div #modal class="modal" tabindex="-1" id="login-modal">
   <div class="modal-dialog">
     <div class="modal-content bg-color-darker border-white">
       <div class="modal-header">
-        <h5 class="modal-title">Authentication Required</h5>
+        <h5 class="modal-title">Authentication</h5>
         <button #closer type="button" class="btn bg-transparent" data-bs-dismiss="modal" aria-label="Close">
           <img src="assets/close.png" class="img img-icon-sm my-1" alt="close">
         </button>
@@ -11,7 +11,7 @@
       <div class="modal-body">
         <form>
           <p>Introduce Server Password. You can set it in RemoteStatsServer console by entering <i>p</i> or <i>password</i>.</p>
-          <input type="password" class="form-control" placeholder="Server password..."
+          <input #input type="password" class="form-control" placeholder="Server password..."
                  [(ngModel)]="password" name="password" autocomplete="off"
                  (keyup.enter)="login()"
           >

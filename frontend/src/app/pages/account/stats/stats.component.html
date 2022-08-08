@@ -137,7 +137,7 @@
                   <img class="item-icon item-icon-sm" [src]="item.loot_desc | urlItem">
                 </th>
                 <td class="align-middle w-25">{{item.quantity | asNumber}}</td>
-                <td class="align-middle w-25">{{getItemDiff(item)}}</td>
+                <td class="align-middle w-25">{{getItemDiff(item)?.toLocaleString()}}</td>
               </ng-container>
             </tr>
             </tbody>

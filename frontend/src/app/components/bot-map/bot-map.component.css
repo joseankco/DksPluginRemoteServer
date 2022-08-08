@@ -39,6 +39,10 @@
   width: 12%;
 }
 
+.pet-info-upper {
+  bottom: 75px;
+}
+
 .progress-small {
   height: 0.4rem;
 }

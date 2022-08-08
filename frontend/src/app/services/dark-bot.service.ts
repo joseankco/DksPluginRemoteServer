@@ -5,6 +5,7 @@ import {RankData} from "../models/rank-data.model";
 import {HangarData} from "../models/hangar-data.model";
 import WebSocketAsPromised from 'websocket-as-promised';
 import {HttpClient} from "@angular/common/http";
+import {GalaxyData} from "../models/galaxy-data.model";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class DarkBotService {
   private data$: ReplaySubject<ServerResponse | ServerResponse[]> = new ReplaySubject<ServerResponse | ServerResponse[]>(1);
   private rankData$: ReplaySubject<RankData | undefined> = new ReplaySubject<RankData | undefined>(1);
   private hangarData$: ReplaySubject<HangarData | undefined> = new ReplaySubject<HangarData | undefined>(1);
+  private galaxyData$: ReplaySubject<GalaxyData | undefined> = new ReplaySubject<GalaxyData | undefined>(1);
 
   private lastReceived: Date | undefined;
   private lastData: ServerResponse | ServerResponse[] = [];
@@ -33,12 +35,6 @@ export class DarkBotService {
   }
 
   public connect(id: string = '') {
-    /*
-    if (id) {
-      return this.websocket.open().then(() => this.websocket.send('switch:' + id))
-    }
-    return this.websocket.open().then(() => this.websocket.send('multiple'))
-    */
     return firstValueFrom(this.setAccount(id)).then((r) => {
       return this.websocket.open();
     });
@@ -115,10 +111,16 @@ export class DarkBotService {
         data.hangarData.id = data.hero.id;
         this.hangarData$.next(data.hangarData)
       }
+      if (data.galaxyData) {
+        data.galaxyData.id = data.hero.id;
+        this.galaxyData$.next(data.galaxyData)
+      }
       this.lastReceived = new Date(data.tick);
     }
     this.error = undefined;
-    console.log(JSON.parse(m))
+    if (isDevMode()) {
+      console.log(JSON.parse(m))
+    }
   }
 
   private trySendLastDataAsSingle(id: string) {
@@ -232,5 +234,9 @@ export class DarkBotService {
 
   public getHangarData() {
     return this.hangarData$;
+  }
+
+  public getGalaxyData() {
+    return this.galaxyData$;
   }
 }

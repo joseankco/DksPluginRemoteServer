@@ -12,6 +12,8 @@ export class ServerStatusComponent implements OnInit, OnDestroy {
 
   subscriptions$: Subscription[] = [];
   id: string = '';
+  start: number | undefined;
+  runningTime: number = 0;
 
   constructor(
     public darkbot: DarkBotService,
@@ -23,7 +25,18 @@ export class ServerStatusComponent implements OnInit, OnDestroy {
       const id = params.get('id');
       this.id = id ? id : '';
     })
+    const sub2$ = this.darkbot.getData().subscribe(data => {
+      if (Array.isArray(data)) {
+        this.start = data[0]?.serverStartTime;
+      } else {
+        this.start = data?.serverStartTime;
+      }
+      if (this.start) {
+        this.runningTime = new Date().getTime() - this.start;
+      }
+    })
     this.subscriptions$.push(sub$);
+    this.subscriptions$.push(sub2$);
   }
 
   connect() {

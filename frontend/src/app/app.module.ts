@@ -28,6 +28,8 @@ import { UrlShipPipe } from './pipes/url-ship.pipe';
 import {MatTooltipModule} from "@angular/material/tooltip";
 import { UrlItemPipe } from './pipes/url-item.pipe';
 import { LoginComponent } from './components/login/login.component';
+import { GalaxyGatesComponent } from './pages/account/galaxy-gates/galaxy-gates.component';
+import { PilotSheetComponent } from './pages/account/pilot-sheet/pilot-sheet.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { LoginComponent } from './components/login/login.component';
     SpecialTitleCasePipe,
     UrlShipPipe,
     UrlItemPipe,
-    LoginComponent
+    LoginComponent,
+    GalaxyGatesComponent,
+    PilotSheetComponent
   ],
     imports: [
         BrowserModule,

@@ -81,35 +81,35 @@ body {
   color: white;
 }
 
-w-10 {
+.w-10 {
   width: 10% !important;
 }
 
-w-20 {
+.w-20 {
   width: 20% !important;
 }
 
-w-30 {
+.w-30 {
   width: 30% !important;
 }
 
-w-40 {
+.w-40 {
   width: 40% !important;
 }
 
-w-60 {
+.w-60 {
   width: 60% !important;
 }
 
-w-70 {
+.w-70 {
   width: 70% !important;
 }
 
-w-80 {
+.w-80 {
   width: 80% !important;
 }
 
-w-90 {
+.w-90 {
   width: 90% !important;
 }
 
@@ -152,4 +152,8 @@ a[aria-expanded="true"] img {
   width: 30px;
   border: none;
   background-color: transparent;
+}
+
+.dropdown-menu-dark .dropdown-item.active {
+  background-color: rgb(33, 37, 41);
 }

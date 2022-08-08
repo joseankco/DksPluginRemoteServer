@@ -3,6 +3,7 @@ import {LoginResponse} from "../../models/main.model";
 import {DarkBotService} from "../../services/dark-bot.service";
 import {firstValueFrom} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-login',
@@ -15,11 +16,18 @@ export class LoginComponent implements OnInit {
   error: string = '';
   @ViewChild('trigger', {static: true}) trigger!: ElementRef<HTMLButtonElement>;
   @ViewChild('closer', {static: true}) closer!: ElementRef<HTMLButtonElement>;
+  @ViewChild('modal', {static: true}) modal!: ElementRef<HTMLDivElement>;
+  @ViewChild('input', {static: true}) input!: ElementRef<HTMLInputElement>;
   @Output() onSuccess = new EventEmitter<LoginResponse>();
 
-  constructor(private darkbot: DarkBotService) { }
+  constructor(
+    private darkbot: DarkBotService,
+    public auth: AuthService
+  ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.modal.nativeElement.addEventListener('shown.bs.modal', () => this.input.nativeElement.focus());
+  }
 
   public openModal() {
     if (this.trigger) {
@@ -28,22 +36,14 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    firstValueFrom(this.darkbot.getSid(this.password)).then((r) => {
-      const data = r as LoginResponse;
+    this.auth.login(this.password).then(data =>{
       this.onSuccess.emit(data);
       if (this.closer) {
         this.closer.nativeElement.click();
       }
       this.error = '';
-    }).catch((reason: HttpErrorResponse) => {
-      switch (reason.status) {
-        case 403:
-          this.error = 'Invalid Password.'
-          break;
-        case 404:
-          this.error = 'Unable to Authenticate. Unsetted password in Server.';
-          break;
-      }
+    }).catch(error => {
+      this.error = error;
     });
   }
 }

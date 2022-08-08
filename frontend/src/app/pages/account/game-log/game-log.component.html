@@ -8,7 +8,7 @@
   <div class="row">
     <div class="col">
       <label class="col-form-label fw-bold">Deaths</label>
-      <textarea class="form-control bg-color-dark text-light" [rows]="data.deaths.numDeaths > 0 ? 2 : 1" disabled>{{ getDeaths() }}</textarea>
+      <textarea class="form-control bg-color-dark text-light overflow-hidden" style="resize: none" [rows]="data.deaths.numDeaths > 0 ? 2 : 1" disabled>{{ getDeaths() }}</textarea>
     </div>
   </div>
 </ng-container>

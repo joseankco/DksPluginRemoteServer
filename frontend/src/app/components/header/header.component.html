@@ -17,27 +17,35 @@
           </ng-container>
           <ng-container *ngIf="single">
             <li class="nav-item">
-              <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/session">Bot</a>
+              <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/session">DarkBot</a>
             </li>
             <ng-container *ngIf="single.plugin">
-              <li class="nav-item">
-                <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/stats">Stats</a>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="backpage" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Backpage
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="backpage">
+                  <li><a class="dropdown-item" href="#" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/stats">Stats</a></li>
+                  <li><a class="dropdown-item" href="#" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/galaxy-gates">Galaxy Gates</a></li>
+                  <li><a class="dropdown-item" href="#" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/modules">Ship Modules</a></li>
+                </ul>
               </li>
-              <li class="nav-item" *ngIf="single.plugin.liveLogs">
-                <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/logs">Log</a>
-              </li>
-              <li class="nav-item" *ngIf="single.plugin.logScrapper">
-                <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/scrapper">Scrapper</a>
-              </li>
-              <li class="nav-item" *ngIf="single.plugin.palladiumStats">
-                <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/palladium">Palladium</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/modules">Modules</a>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="plugin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Plugin
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="plugin">
+                  <li><a class="dropdown-item" href="#" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/logs">Log Viewer</a></li>
+                  <li><a class="dropdown-item" href="#" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/scrapper">Log Scrapper</a></li>
+                  <li><a class="dropdown-item" href="#" [routerLinkActive]="['active']" routerLink="/account/{{single.hero.id}}/palladium">Palladium Stats</a></li>
+                </ul>
               </li>
               <li class="nav-item cursor-pointer" *ngIf="!isMobilePhone()">
                 <a class="nav-link" (click)="setOpenClient(login)" [matTooltip]="'Open DarkOrbit Client by ⎛⎝ Kaiserdj™ ⎠⎞'" matTooltipPosition="below">Launcher</a>
               </li>
+              <!-- li class="nav-item cursor-pointer" *ngIf="!auth.isLogged()">
+                <a class="nav-link" (click)="doLogin(login)">Auth</a>
+              </li -->
             </ng-container>
           </ng-container>
         </ul>
