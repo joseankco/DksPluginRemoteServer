@@ -6,10 +6,9 @@ from time import sleep
 import requests
 import base64
 
-from requests import Timeout
-
 from RankTypes import RankDataTransferDTO, RankUtils, RankDataDiffDTO, RankDataDTO
 from HangarTypes import HangarListDTO, HangarItemsDTO, HangarItemsDiffDTO, HangarDataTransferDTO, ItemTypes
+from GalaxyTypes import GatesUtils, GateDTO, GatesDataDTO, GatesDataDiffDTO, GatesDataTransferDTO
 
 
 # MANAGER API
@@ -18,7 +17,7 @@ class ManagerAbstract(object):
         self.aid = aid
         self.sid = None
         self.instance = None
-        self.useragent = 'BigpointClient/1.6.3'
+        self.useragent = 'BigpointClient/1.6.7'
         self.data = None
 
     def get_id(self):
@@ -54,6 +53,7 @@ class ManagerAPI(object):
         self.aid = aid
         self.backpage = BackPageSingleton(aid)
         self.hangar = HangarSingleton(aid)
+        self.galaxy = GalaxyGatesSingleton(aid)
         self.thread = threading.Thread()
 
     def is_thread_alive(self):
@@ -66,6 +66,8 @@ class ManagerAPI(object):
         while True:
             sleep(1)
             self.backpage.refresh_data()
+            sleep(2)
+            self.galaxy.refresh_data()
             sleep(2)
             self.hangar.refresh_data()
             sleep(180)
@@ -80,6 +82,7 @@ class ManagerAPI(object):
     def set_sesion(self, instance, sid):
         self.backpage.set_sesion(instance, sid)
         self.hangar.set_sesion(instance, sid)
+        self.galaxy.set_sesion(instance, sid)
 
     def get_sid(self):
         return self.backpage.sid
@@ -363,6 +366,93 @@ class BackPageSingleton(object):
         inst = cls.get_instance(aid)
         if inst is None:
             inst = BackPageAPI(aid)
+            cls.instance.append(inst)
+        return inst
+
+    @classmethod
+    def get_instance(cls, aid: str):
+        if cls.instance is None or len(cls.instance) == 0:
+            return None
+        for inst in cls.instance:
+            if inst.get_id() == aid:
+                return inst
+        return None
+
+
+# GALAXYGATES
+class GalaxyGatesActions(Enum):
+    INIT = 1
+    INFO_GATE_FULL = 2,
+    INFO_GATE_LAST = 3
+
+    def get_str(self):
+        switcher = {
+            1: 'flashinput/galaxyGates.php?action=init&sid={}',
+            2: 'jumpgate.php?gateID={}&type=full',
+            3: 'jumpgate.php?gateID={}&type=last',
+        }
+        return switcher.get(self.value, '')
+
+    def __str__(self):
+        return self.get_str()
+
+
+class GalaxyGatesAPI(ManagerAbstract):
+    def __init__(self, aid: str):
+        super().__init__(aid)
+        self.data: GatesDataTransferDTO = GatesDataTransferDTO(None, None, None)
+
+    # override
+    def get_url(self):
+        if self.is_valid_instance():
+            return self.instance
+        return None
+
+    # override
+    def refresh_data(self):
+        if not self.is_valid_instance():
+            return False
+
+        url = self.get_url_action(GalaxyGatesActions.INIT)
+        if url is not None:
+            url = url.format(self.sid)
+
+        try:
+            r = requests.get(
+                url=url,
+                headers=self.get_headers(),
+                cookies=self.get_cookies(),
+                timeout=5000
+            )
+        except BaseException:
+            print('Exception Refreshing GalaxyGates', self.aid)
+            return False
+
+        now_gg_data: GatesDataDTO = GatesUtils.parse_galaxy_gates(r)
+        if now_gg_data is not None:
+            if self.data.init is None:
+                self.data.init = now_gg_data
+            self.data.now = now_gg_data
+
+            self.data.diff = GatesDataDiffDTO.get_gates_data_diff(self.data.init, self.data.now)
+            self.data.stats.update_stats(self.data.now)
+            return True
+        else:
+            return False
+
+    def get_url_action(self, action: GalaxyGatesActions):
+        if self.is_valid_instance():
+            return self.get_url() + action.get_str()
+        return None
+
+
+class GalaxyGatesSingleton(object):
+    instance: list[GalaxyGatesAPI] = []
+
+    def __new__(cls, aid: str):
+        inst = cls.get_instance(aid)
+        if inst is None:
+            inst = GalaxyGatesAPI(aid)
             cls.instance.append(inst)
         return inst
 
