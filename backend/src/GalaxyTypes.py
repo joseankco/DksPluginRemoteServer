@@ -339,7 +339,7 @@ class GatesUtils(object):
 
     @staticmethod
     def parse_galaxy_gates(r) -> Optional[GatesDataDTO]:
-        soup = BeautifulSoup(r.text, 'lxml-xml')
+        soup = BeautifulSoup(r.text, features='xml')
         jumpgate = soup.jumpgate
         if jumpgate is not None:
             data: GatesDataDTO = GatesDataDTO(jumpgate.mode.string)
