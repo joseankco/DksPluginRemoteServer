@@ -133,7 +133,7 @@ def parse_post_data(data):
             accid = hash_string_md5(accid)
             data['hero']['id'] = accid
             data['hero']['username'] = hash_string_md5(data['hero']['username'])
-        unhash_id[data['hero']['id']] = orig_id
+        unhash_id[str(data['hero']['id'])] = orig_id
 
         fill_ticks_if_empty(accid, 0)
 

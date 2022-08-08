@@ -36,7 +36,7 @@ def install_ngrok():
 
 class Version(object):
     def __init__(self):
-        self.version = '3.1.5'
+        self.version = '3.1.6'
         self.min_plugin_version = '1.4.0'
         self.url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/server.json'
         self.update_url = 'https://gist.githubusercontent.com/joseankco/bbddd86e6f2c12cf2fe81658b579587f/raw/RemoteStatsServer.exe'
